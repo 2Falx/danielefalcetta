@@ -7,7 +7,7 @@ Modern, responsive personal website showcasing my research in Deep Learning and 
 
 ## 🌐 Live Site
 
-Visit my website: [danielefalcetta.github.io](https://danielefalcetta.github.io)
+Visit my [website](https://2falx.github.io/danielefalcetta/)!
 
 ## ✨ Features
 
