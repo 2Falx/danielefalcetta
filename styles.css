@@ -4222,8 +4222,8 @@ button {
 @media (min-width: 1200px) {
     .floating-contact {
         position: fixed;
-        left: 2.3rem;
-        top: 19%;
+        left: 2rem;
+        top: 25%;
         transform: translateY(-50%);
         display: flex;
         flex-direction: column;
