@@ -4362,9 +4362,17 @@ button {
         bottom: 1.5rem;
     }
 
+    /* Stack theme toggle above back-to-top on very small screens */
     .theme-toggle {
         right: 0.8rem;
-        bottom: 1.5rem;
+        bottom: calc(1rem + 48px);
+    }
+
+    .back-to-top {
+        right: 0.8rem;
+        bottom: 1rem;
+        width: 40px;
+        height: 40px;
     }
 
     .lang-btn,
