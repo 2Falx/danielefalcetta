@@ -4323,7 +4323,8 @@ button {
 
     .theme-toggle {
         right: 1rem;
-        bottom: 2rem;
+        /* place theme toggle above the back-to-top button to avoid overlap */
+        bottom: calc(1rem + 56px);
     }
 
     /* Make both controls the same outer size and border so their centers align */
@@ -4334,6 +4335,14 @@ button {
         border-width: 2px;
         box-sizing: border-box;
         padding: 0;
+    }
+
+    /* Ensure back-to-top sits below on mobile so it doesn't overlap the theme toggle */
+    .back-to-top {
+        right: 1rem;
+        bottom: 1rem;
+        width: 44px;
+        height: 44px;
     }
 
     .flag-icon {
