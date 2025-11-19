@@ -994,6 +994,49 @@ document.addEventListener('DOMContentLoaded', () => {
     
     // Initialize skill bar animations
     animateSkillBars();
+    
+    // Hide floating contact toolbar when the contact section is in view
+    try {
+        const floating = document.querySelector('.floating-contact');
+        const contactSection = document.getElementById('contact');
+        if (floating && contactSection) {
+            const contactObserver = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        floating.classList.add('hidden');
+                        floating.setAttribute('aria-hidden', 'true');
+                    } else {
+                        floating.classList.remove('hidden');
+                        floating.setAttribute('aria-hidden', 'false');
+                    }
+                });
+            }, { threshold: 0.5 });
+
+            contactObserver.observe(contactSection);
+
+            // Ensure toolbar is hidden on narrow viewports where it isn't shown anyway
+            const mq = window.matchMedia('(min-width: 1200px)');
+            const handleMq = (e) => {
+                if (!e.matches) {
+                    floating.classList.add('hidden');
+                } else {
+                    // when returning to wide view, re-evaluate: if contact in view keep hidden
+                    // trigger a manual check
+                    const rect = contactSection.getBoundingClientRect();
+                    const inView = rect.top < window.innerHeight && rect.bottom >= 0;
+                    if (inView) floating.classList.add('hidden');
+                    else floating.classList.remove('hidden');
+                }
+            };
+            if (mq.addEventListener) mq.addEventListener('change', handleMq);
+            else mq.addListener(handleMq);
+
+            // initial state
+            if (!mq.matches) floating.classList.add('hidden');
+        }
+    } catch (e) {
+        console.warn('Floating contact observer failed', e);
+    }
 });
 
 // 3D Tilt Effect for Project Cards

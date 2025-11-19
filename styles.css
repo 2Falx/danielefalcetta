@@ -2974,6 +2974,13 @@ section:nth-child(even) {
     transition: color 0.3s ease;
 }
 
+/* Ensure anchor inside the collaboration name follows the heading color
+   (prevents default/blue link color in dark mode). */
+.collaboration-name a {
+    color: inherit;
+    text-decoration: none;
+}
+
 .collaboration-item:hover .collaboration-name {
     color: var(--primary-color);
 }
@@ -4261,6 +4268,15 @@ button {
     }
 }
 
+/* When the contact section is visible, hide the floating toolbar smoothly */
+.floating-contact.hidden {
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+    transform: translateY(8px);
+    transition: opacity 0.22s ease, transform 0.22s ease, visibility 0.22s ease;
+}
+
 .lang-btn {
     display: flex;
     align-items: center;
@@ -4298,19 +4314,64 @@ button {
 }
 
 /* Mobile language toggle */
-@media (max-width: 768px) {
+@media (max-width: 780px) {
+    /* Keep language on the left and theme on the right with identical vertical alignment */
     .language-toggle {
         left: 1rem;
-        bottom: 6rem;
+        bottom: 2rem;
     }
-    
-    .lang-btn {
-        width: 45px;
-        height: 45px;
+
+    .theme-toggle {
+        right: 1rem;
+        bottom: 2rem;
     }
-    
+
+    /* Make both controls the same outer size and border so their centers align */
+    .lang-btn,
+    .theme-toggle {
+        width: 44px;
+        height: 44px;
+        border-width: 2px;
+        box-sizing: border-box;
+        padding: 0;
+    }
+
     .flag-icon {
-        font-size: 1.3rem;
+        font-size: 1.15rem;
+    }
+
+    .theme-toggle svg {
+        width: 20px;
+        height: 20px;
+    }
+}
+
+/* Extra safeguard for very small screens to ensure exact alignment */
+@media (max-width: 480px) {
+    .language-toggle {
+        left: 0.8rem;
+        bottom: 1.5rem;
+    }
+
+    .theme-toggle {
+        right: 0.8rem;
+        bottom: 1.5rem;
+    }
+
+    .lang-btn,
+    .theme-toggle {
+        width: 40px;
+        height: 40px;
+        border-width: 2px;
+    }
+
+    .flag-icon {
+        font-size: 1rem;
+    }
+
+    .theme-toggle svg {
+        width: 18px;
+        height: 18px;
     }
 }
 
