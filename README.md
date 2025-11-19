@@ -121,6 +121,15 @@ If using a custom domain:
 - ✅ Safari 14+
 - ✅ Mobile browsers (iOS Safari, Chrome Mobile)
 
+## 🆕 Recent Updates
+
+- **Bilingual support (English / Italian)**: site text now supports both languages with a language toggle; preference is saved in `localStorage`.
+- **Robust client-side translations**: nav, hero, about, timeline, projects, awards, collaborations, presentations, and footer are translated at runtime.
+- **Carousel UX improvements**: Collaborations and Presentations carousels now support click-to-center behavior — clicking a card (including cloned carousel items) centers it. Presentations open the modal when centered.
+- **Clone-safe translation fixes**: translations now update cloned carousel items too, avoiding language reversion during wrap-around.
+- **Layout tweaks**: central container max-width increased (1400px); About section allowed to expand with the central layout; central blocks kept centered.
+- **Floating contact toolbar**: four quick-contact icon buttons (Email, GitHub, LinkedIn, Google Scholar) appear as a fixed vertical toolbar on wide desktops (>=1200px). Buttons are slightly transparent until hovered.
+  
 ## 🔧 Performance
 
 - **Lighthouse Score**: 95+ across all metrics

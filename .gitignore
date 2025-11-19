@@ -1,0 +1,7 @@
+# Ignore generated or local files
+README.pdf
+.DS_Store
+node_modules/
+.env
+__pycache__/
+*.log

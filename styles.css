@@ -105,9 +105,24 @@ body {
 }
 
 .container {
-    max-width: 1200px;
+    /* Increased central width for a larger central layout */
+    width: 100%;
+    max-width: 1800px;
     margin: 0 auto;
     padding: 0 2rem;
+}
+
+/* Keep central blocks centered even when inner elements have their own max-widths */
+.hero-content,
+.stats-grid,
+.presentations-carousel,
+.collaborations-carousel {
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.hero-content {
+    margin-top: 0; /* avoid adding extra vertical offset */
 }
 
 /* ==================== NAVIGATION ==================== */
@@ -136,6 +151,11 @@ body {
     display: flex;
     justify-content: space-between;
     align-items: center;
+    /* Limit navbar content width so navbar feels shallower than page */
+    max-width: 1300px;
+    width: 100%;
+    margin: 0 auto;
+    padding: 0 1rem;
 }
 
 .nav-brand {
@@ -193,6 +213,11 @@ body {
     border-radius: 0.5rem;
     text-decoration: none;
     transition: all 0.3s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    white-space: nowrap; /* prevent wrapping */
+    flex-shrink: 0; /* avoid shrinking into multiple lines */
 }
 
 .nav-contact-btn:hover {
@@ -200,6 +225,14 @@ body {
     background-color: rgba(37, 99, 235, 0.1);
     border-color: var(--primary-color);
     transform: translateY(-2px);
+}
+
+/* Ensure the contact button remains on one line on narrow screens by reducing padding/font-size */
+@media (max-width: 520px) {
+    .nav-contact-btn {
+        padding: 0.35rem 0.6rem;
+        font-size: 0.78rem;
+    }
 }
 
 .nav-links {
@@ -651,9 +684,13 @@ body {
     background: linear-gradient(135deg, #10b981 0%, #059669 100%);
     color: white;
     border: none;
-    display: inline-flex;
+    display: inline-flex !important;
     align-items: center;
     gap: 0.5rem;
+    white-space: nowrap !important;
+    flex-wrap: nowrap !important;
+    min-width: max-content !important;
+    width: auto !important;
 }
 
 .btn-cv:hover {
@@ -686,7 +723,9 @@ section:nth-child(even) {
 
 /* ==================== ABOUT SECTION ==================== */
 .about-content {
-    max-width: 800px;
+    /* Allow About section to expand with the central container */
+    width: 100%;
+    max-width: 1000px;
     margin: 0 auto;
 }
 
@@ -695,6 +734,15 @@ section:nth-child(even) {
     color: var(--text-secondary);
     margin-bottom: 1.5rem;
     line-height: 1.8;
+}
+
+/* Justify About text for nicer paragraph layout */
+.about-text {
+    text-align: justify;
+    text-justify: inter-word;
+    -webkit-hyphens: auto;
+    -ms-hyphens: auto;
+    hyphens: auto;
 }
 
 .skills {
@@ -1211,10 +1259,33 @@ section:nth-child(even) {
 
 .stats-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-    gap: 2.5rem;
-    max-width: 1100px;
+    /* Force column counts so layout never becomes 3 columns.
+       Desktop: 4 columns; Medium: 2 columns (2x2); Mobile: 1 column */
+    grid-template-columns: repeat(4, 1fr);
+    gap: 2rem;
+    max-width: 1200px;
     margin: 0 auto;
+}
+
+/* Medium screens: 2 columns (2x2) */
+@media (max-width: 1000px) {
+    .stats-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 1.5rem;
+        max-width: 760px;
+    }
+}
+
+/* Small screens: single column */
+@media (max-width: 480px) {
+    .stats-grid {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+        max-width: 100%;
+    }
+    .stat-card {
+        padding: 1.5rem 1rem;
+    }
 }
 
 .stat-card {
@@ -2517,7 +2588,7 @@ section:nth-child(even) {
 
 /* ==================== CONTACT SECTION ==================== */
 .contact-content {
-    max-width: 600px;
+    max-width: 800px;
     margin: 0 auto;
     text-align: center;
 }
@@ -3832,13 +3903,14 @@ section:nth-child(even) {
     }
     
     .collaboration-item {
-        flex: 0 0 calc(100% - 1rem);
-        min-width: 280px;
-        transform: scale(0.7) translateY(30px);
+        /* slightly smaller cards at this breakpoint to reduce visual dominance */
+        flex: 0 0 calc(90% - 1rem);
+        min-width: 220px;
+        transform: scale(0.66) translateY(28px);
     }
     
     .collaboration-item.active {
-        transform: scale(1.1) translateY(0);
+        transform: scale(1.06) translateY(0);
     }
     
     .collaborations .carousel-nav {
@@ -4003,6 +4075,15 @@ section:nth-child(even) {
         width: 100%;
     }
     
+    .hero-buttons .btn-cv {
+        white-space: nowrap !important;
+        flex-wrap: nowrap !important;
+        justify-content: center;
+        min-width: max-content !important;
+        width: auto !important;
+        padding: 0.75rem 1.25rem !important;
+    }
+    
     /* Mobile-optimized cards */
     .project-card,
     .award-card,
@@ -4124,3 +4205,158 @@ button {
     transform: translateZ(0);
     will-change: transform;
 }
+
+/* ==================== LANGUAGE TOGGLE ==================== */
+.language-toggle {
+    position: fixed;
+    left: 2rem;
+    bottom: 2rem;
+    z-index: 1000;
+}
+
+/* Floating contact toolbar for wide desktops */
+.floating-contact {
+    display: none; /* hidden by default, shown on wide screens */
+}
+
+@media (min-width: 1200px) {
+    .floating-contact {
+        position: fixed;
+        left: 2.3rem;
+        top: 19%;
+        transform: translateY(-50%);
+        display: flex;
+        flex-direction: column;
+        gap: 0.75rem;
+        z-index: 1002;
+        align-items: center;
+    }
+
+    .floating-contact-link {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 48px;
+        height: 48px;
+        border-radius: 50%;
+        background: var(--bg-primary);
+        border: 2px solid var(--border-color);
+        color: var(--text-primary);
+        text-decoration: none;
+        box-shadow: 0 6px 18px rgba(0,0,0,0.08);
+        transition: transform 0.18s ease, box-shadow 0.18s ease, background 0.18s ease, opacity 0.18s ease;
+        opacity: 0.40; /* slightly transparent until hovered */
+    }
+
+    .floating-contact-link:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 10px 30px rgba(0,0,0,0.12);
+        background: linear-gradient(135deg, rgba(37,99,235,0.08), rgba(59,130,246,0.06));
+        opacity: 1; /* fully visible on hover */
+    }
+
+    .floating-contact-link .icon {
+        width: 20px;
+        height: 20px;
+    }
+}
+
+.lang-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 50px;
+    height: 50px;
+    background: var(--bg-primary);
+    border: 1px solid var(--border-color);
+    border-radius: 50%;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: var(--shadow-lg);
+    padding: 0;
+}
+
+.lang-btn:hover {
+    background: var(--primary-color);
+    border-color: var(--primary-color);
+    transform: translateY(-3px) scale(1.05);
+    box-shadow: 0 15px 30px rgba(0, 0, 0, 0.2);
+}
+
+.lang-btn:hover .flag-icon {
+    transform: scale(1.1);
+}
+
+.flag-icon {
+    font-size: 1.5rem;
+    line-height: 1;
+    transition: transform 0.3s ease;
+}
+
+.lang-text {
+    display: none;
+}
+
+/* Mobile language toggle */
+@media (max-width: 768px) {
+    .language-toggle {
+        left: 1rem;
+        bottom: 6rem;
+    }
+    
+    .lang-btn {
+        width: 45px;
+        height: 45px;
+    }
+    
+    .flag-icon {
+        font-size: 1.3rem;
+    }
+}
+
+/* Language-specific content visibility */
+/* Default state (English) */
+/* Language visibility: default hide all language-marked elements, then show only active language
+   Use explicit display values for common tags to avoid relying on 'revert' which can be inconsistent
+*/
+
+[data-lang] {
+    display: none !important;
+}
+
+/* English active (when body does NOT have .lang-it) */
+body:not(.lang-it) [data-lang="en"] {
+    display: block !important;
+}
+body:not(.lang-it) li[data-lang="en"] {
+    display: list-item !important;
+}
+body:not(.lang-it) a[data-lang="en"],
+body:not(.lang-it) .btn[data-lang="en"] {
+    display: inline-flex !important;
+}
+body:not(.lang-it) span[data-lang="en"],
+body:not(.lang-it) p[data-lang="en"],
+body:not(.lang-it) h3[data-lang="en"],
+body:not(.lang-it) h4[data-lang="en"] {
+    display: block !important;
+}
+
+/* Italian active */
+body.lang-it [data-lang="it"] {
+    display: block !important;
+}
+body.lang-it li[data-lang="it"] {
+    display: list-item !important;
+}
+body.lang-it a[data-lang="it"],
+body.lang-it .btn[data-lang="it"] {
+    display: inline-flex !important;
+}
+body.lang-it span[data-lang="it"],
+body.lang-it p[data-lang="it"],
+body.lang-it h3[data-lang="it"],
+body.lang-it h4[data-lang="it"] {
+    display: block !important;
+}
+
