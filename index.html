@@ -58,8 +58,8 @@
     <!-- Performance Optimization -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link rel="preload" href="styles.css" as="style">
-    <link rel="dns-prefetch" href="https://fonts.googleapis.com">
+    <link rel="dns-prefetch" href="//docs.google.com">
+    <link rel="dns-prefetch" href="//scholar.google.com">
     
     <!-- Schema.org structured data for Google -->
     <script type="application/ld+json">
@@ -104,13 +104,7 @@
     
     <title>Daniele Falcetta - Doctoral Researcher in Deep Learning & Medical Imaging</title>
     
-    <!-- Preload critical resources -->
-    <link rel="preload" href="styles.css" as="style">
-    <link rel="preload" href="script.js" as="script">
-    
-    <!-- DNS prefetch for external resources -->
-    <link rel="dns-prefetch" href="//docs.google.com">
-    
+    <!-- Critical CSS inline or external -->
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
@@ -207,7 +201,7 @@
                     </div>
                 </div>
                 <div class="hero-profile">
-                    <img src="profile.jpg" alt="Daniele Falcetta" class="profile-image">
+                    <img src="profile.jpg" alt="Daniele Falcetta" class="profile-image" width="200" height="200" fetchpriority="high">
                 </div>
             </div>
         </div>
@@ -387,7 +381,7 @@
                 <div class="timeline-item" data-aos="fade-left">
                     <div class="timeline-dot"></div>
                     <div class="timeline-content">
-                        <div class="timeline-date">2023 - Present (Expected End: 2026)</div>
+                        <div class="timeline-date">2023 - Early 2026</div>
                         <h3 class="timeline-title">🔬 PhD Candidate</h3>
                         <p class="timeline-location">Sorbonne Université & EURECOM</p>
                         <p class="timeline-description">
@@ -796,7 +790,7 @@
                         <span class="publication-badge first-author">⭐ First Author</span>
                         <span class="publication-badge spotlight">🎤 Spotlight</span>
                         <span class="publication-badge conference">📄 Conference</span>
-                        <span class="publication-badge caravel"><img src="images/erc.png" alt="ERC" class="badge-icon"> CARAVEL (ERC)</span>
+                        <span class="publication-badge caravel"><img src="images/erc.png" alt="ERC" class="badge-icon" loading="lazy" width="16" height="16"> CARAVEL (ERC)</span>
                     </div>
                     <p class="publication-authors">D. Falcetta, et al.</p>
                     <p class="publication-venue">MICCAI 2025, 28th International Conference on Medical Image Computing and Computer Assisted Intervention (Early Acceptance - Best 9%)</p>

@@ -1,3 +1,46 @@
+// ==================== PERFORMANCE OPTIMIZATIONS ====================
+// Debounce function for expensive operations
+const debounce = (func, wait) => {
+    let timeout;
+    return function executedFunction(...args) {
+        const later = () => {
+            clearTimeout(timeout);
+            func(...args);
+        };
+        clearTimeout(timeout);
+        timeout = setTimeout(later, wait);
+    };
+};
+
+// Throttle function for scroll events
+const throttle = (func, limit) => {
+    let inThrottle;
+    return function(...args) {
+        if (!inThrottle) {
+            func.apply(this, args);
+            inThrottle = true;
+            setTimeout(() => inThrottle = false, limit);
+        }
+    };
+};
+
+// Cache DOM queries
+const domCache = new Map();
+const getCached = (selector) => {
+    if (!domCache.has(selector)) {
+        domCache.set(selector, document.querySelector(selector));
+    }
+    return domCache.get(selector);
+};
+
+const getAllCached = (selector) => {
+    const key = `all:${selector}`;
+    if (!domCache.has(key)) {
+        domCache.set(key, document.querySelectorAll(selector));
+    }
+    return domCache.get(key);
+};
+
 // ==================== LANGUAGE SWITCHER ====================
 // Translation object
 const translations = {
@@ -135,7 +178,7 @@ const translations = {
         contactText: "I'm always open to discussing research collaborations, new opportunities in medical imaging and AI, or just chatting about interesting ideas in deep learning and computer vision.",
         timeline: [
             {
-                date: '2023 - Present (Expected End: 2026)',
+                date: '2023 - Early 2026',
                 title: '🔬 PhD Candidate',
                 location: 'Sorbonne Université & EURECOM',
                 description: 'Doctoral research on Annotation-Efficient Selection and Collaborative Datasets for Clinical Translation in Brain Vessel Segmentation. Supervised by Prof. Maria A. Zuluaga.',
@@ -879,11 +922,11 @@ document.addEventListener('click', (e) => {
     }
 });
 
-// Navbar scroll effect and active link highlighting
+// Navbar scroll effect and active link highlighting (throttled for performance)
 const navbar = document.querySelector('.navbar');
 let lastScroll = 0;
 
-window.addEventListener('scroll', () => {
+const handleNavbarScroll = throttle(() => {
     const currentScroll = window.pageYOffset;
     
     // Add scrolled class for styling
@@ -913,7 +956,9 @@ window.addEventListener('scroll', () => {
     });
     
     lastScroll = currentScroll;
-});
+}, 100);
+
+window.addEventListener('scroll', handleNavbarScroll, { passive: true });
 
 // Add ripple effect to buttons
 document.querySelectorAll('.btn').forEach(button => {
@@ -1285,22 +1330,22 @@ window.addEventListener('load', () => {
     }, 100);
 });
 
-// Add smooth reveal for sections on scroll
-const revealSections = () => {
+// Add smooth reveal for sections on scroll (throttled for performance)
+const revealSections = throttle(() => {
     const sections = document.querySelectorAll('section');
+    const windowHeight = window.innerHeight;
     
     sections.forEach(section => {
         const sectionTop = section.getBoundingClientRect().top;
-        const windowHeight = window.innerHeight;
         
         if (sectionTop < windowHeight * 0.85) {
             section.style.opacity = '1';
             section.style.transform = 'translateY(0)';
         }
     });
-};
+}, 150);
 
-window.addEventListener('scroll', revealSections);
+window.addEventListener('scroll', revealSections, { passive: true });
 revealSections(); // Initial check
 
 // Add keyboard navigation for accessibility
@@ -1950,13 +1995,15 @@ document.addEventListener('DOMContentLoaded', () => {
         const publicationItems = document.querySelectorAll('.publication-item');
         let currentActiveItem = null;
         
+        // Trigger when card is centered on screen
         const observerOptions = {
-            threshold: 0.5,
-            rootMargin: '-20% 0px -20% 0px'
+            threshold: [0, 0.25, 0.5, 0.75, 1],
+            rootMargin: '-40% 0px -40% 0px' // Center 20% of viewport
         };
         
         const publicationObserver = new IntersectionObserver((entries) => {
             entries.forEach(entry => {
+                // Activate when card is in the center zone (intersecting with center 20%)
                 if (entry.isIntersecting) {
                     // Remove active class from previous item
                     if (currentActiveItem && currentActiveItem !== entry.target) {
@@ -1966,7 +2013,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     entry.target.classList.add('mobile-active');
                     currentActiveItem = entry.target;
                 } else if (entry.target === currentActiveItem) {
-                    // Remove active class when scrolling away
+                    // Remove active class when scrolling away from center
                     entry.target.classList.remove('mobile-active');
                     if (currentActiveItem === entry.target) {
                         currentActiveItem = null;

@@ -128,10 +128,7 @@ If using a custom domain:
 - **Carousel UX improvements**: Collaborations and Presentations carousels now support click-to-center behavior — clicking a card (including cloned carousel items) centers it. Presentations open the modal when centered.
 - **Clone-safe translation fixes**: translations now update cloned carousel items too, avoiding language reversion during wrap-around.
 - **Layout tweaks**: central container max-width increased (1400px); About section allowed to expand with the central layout; central blocks kept centered.
-- **Floating contact toolbar**: five quick-contact icon buttons (Email, GitHub, LinkedIn, Google Scholar, Discord) appear as a fixed vertical toolbar on wide desktops (>=1200px). Buttons are slightly transparent until hovered.
-- **Mobile navbar improvements**: centered mobile navbar menu with improved alignment and button positioning.
-- **Mobile controls repositioning**: swapped theme toggle and back-to-top button positions on mobile; both aligned horizontally with language toggle.
-- **Mobile publications animation**: on mobile devices (≤768px), publication cards automatically animate when scrolled into view, showing one active card at a time with enhanced shadows, transforms, and staggered badge animations.
+- **Floating contact toolbar**: four quick-contact icon buttons (Email, GitHub, LinkedIn, Google Scholar) appear as a fixed vertical toolbar on wide desktops (>=1200px). Buttons are slightly transparent until hovered.
   
 ## 🔧 Performance
 
