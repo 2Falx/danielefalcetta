@@ -1941,3 +1941,42 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 });
+
+// ==================== PUBLICATIONS MOBILE SCROLL ANIMATION ====================
+document.addEventListener('DOMContentLoaded', () => {
+    const isMobile = () => window.matchMedia('(max-width: 768px)').matches;
+    
+    if (isMobile()) {
+        const publicationItems = document.querySelectorAll('.publication-item');
+        let currentActiveItem = null;
+        
+        const observerOptions = {
+            threshold: 0.5,
+            rootMargin: '-20% 0px -20% 0px'
+        };
+        
+        const publicationObserver = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    // Remove active class from previous item
+                    if (currentActiveItem && currentActiveItem !== entry.target) {
+                        currentActiveItem.classList.remove('mobile-active');
+                    }
+                    // Add active class to current item
+                    entry.target.classList.add('mobile-active');
+                    currentActiveItem = entry.target;
+                } else if (entry.target === currentActiveItem) {
+                    // Remove active class when scrolling away
+                    entry.target.classList.remove('mobile-active');
+                    if (currentActiveItem === entry.target) {
+                        currentActiveItem = null;
+                    }
+                }
+            });
+        }, observerOptions);
+        
+        publicationItems.forEach(item => {
+            publicationObserver.observe(item);
+        });
+    }
+});
