@@ -92,13 +92,37 @@ body {
 }
 
 .loader {
-    width: 50px;
-    height: 50px;
+    /* Larger loader container; spinner drawn with pseudo-element so
+       the inner logo does not rotate. */
+    width: 80px;
+    height: 80px;
     margin: 0 auto 1rem;
-    border: 4px solid rgba(255, 255, 255, 0.3);
+    position: relative;
+}
+
+.loader::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border: 6px solid rgba(255, 255, 255, 0.28);
     border-top-color: white;
     border-radius: 50%;
+    box-sizing: border-box;
     animation: spin 1s linear infinite;
+}
+
+/* Place a centered logo inside the spinner circle (logo stays static) */
+.loader-logo {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 56%;
+    height: 56%;
+    object-fit: contain;
+    border-radius: 50%;
+    display: block;
+    pointer-events: none;
 }
 
 @keyframes spin {
