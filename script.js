@@ -124,7 +124,7 @@ const translations = {
                 desc: 'Best paper in AI and Imaging for Breast Care'
             },
             coOrganizer: {
-                title: 'Co-Organizer',
+                title: 'Challenge Co-Organizer',
                 org: 'TopBrain MICCAI 2025 Challenge',
                 desc: 'Leading international brain segmentation challenge'
             },
@@ -150,7 +150,7 @@ const translations = {
             }
         },
         footer: {
-            subtitle: 'PhD Candidate in Deep Learning & Medical Imaging',
+            subtitle: 'AI Research Scientist | 3D Computer Vision & Deep Learning',
             quickLinks: 'Quick Links',
             connect: 'Connect',
             home: 'Home',
@@ -162,10 +162,11 @@ const translations = {
             rights: 'All rights reserved',
             builtWith: 'Built with 💙 and ☕'
         },
+        // UPDATED: Optimized for Industry / Research Scientist Role
         aboutText: [
-            "I'm a 3rd-year PhD Candidate at Sorbonne Université and EURECOM, working under the supervision of Prof. Maria A. Zuluaga. My doctoral research focuses on Annotation-Efficient Selection and Collaborative Datasets for Clinical Translation in Brain Vessel Segmentation.",
-            "My research interests span Deep Learning, 3D Medical Imaging, and Computer Vision, with particular emphasis on interpretable and informative data selection. I've demonstrated success in international collaborations and multi-institutional projects, with two MICCAI 2025 Early Acceptances (Best 9%) and proven real-world clinical research translation.",
-            "Prior to my PhD, I completed a Double Degree MSc. in Data Science from EURECOM and Politecnico di Torino, and hold a BSc. in Biomedical Engineering. I'm passionate about bridging the gap between cutting-edge AI research and clinical applications."
+            "I am a PhD Candidate at Sorbonne Université and EURECOM, specializing in Data-Efficient Deep Learning and 3D Computer Vision. My research addresses the 'Data Scarcity' challenge in AI by architecting Active Learning frameworks and collaborative annotation infrastructures (MLOps) that reduce labeling costs while maximizing model performance.",
+            "My work on interpretable data selection for complex 3D topologies has achieved State-of-the-Art results, including two Early Acceptances at MICCAI 2025 (Top 9%). I bridge the gap between theoretical research and production engineering, using high-dimensional medical imaging as a rigorous testbed for solving universal computer vision problems.",
+            "Prior to my PhD, I completed a Double Degree MSc. in Data Science from EURECOM and Politecnico di Torino, and hold a BSc. in Biomedical Engineering. I am passionate about deploying robust, scalable AI systems in real-world, high-stakes environments."
         ],
         skillsTitle: 'Skills & Expertise',
         technicalProficiency: 'Technical Proficiency',
@@ -175,14 +176,15 @@ const translations = {
             intermediate: 'Intermediate',
             beginner: 'Beginner'
         },
-        contactText: "I'm always open to discussing research collaborations, new opportunities in medical imaging and AI, or just chatting about interesting ideas in deep learning and computer vision.",
+        contactText: "I'm always open to discussing research collaborations, new opportunities in AI/Computer Vision, or just chatting about interesting ideas in deep learning and scalable infrastructure.",
         timeline: [
+            // UPDATED: Reframed PhD as a Job/Role
             {
                 date: '2023 - Early 2026',
-                title: '🔬 PhD Candidate',
+                title: '🔬 AI Research Scientist (PhD Candidate)',
                 location: 'Sorbonne Université & EURECOM',
-                description: 'Doctoral research on Annotation-Efficient Selection and Collaborative Datasets for Clinical Translation in Brain Vessel Segmentation. Supervised by Prof. Maria A. Zuluaga.',
-                tags: ['Deep Learning', 'Medical Imaging', 'Research']
+                description: 'Leading research on Data-Efficient Deep Learning. Architected "VesselVerse," a collaborative annotation infrastructure reducing labeling costs for 3D segmentation. Achieved SOTA results (Top 9% MICCAI) in Active Learning and Domain Adaptation.',
+                tags: ['Deep Learning', 'Computer Vision', 'MLOps']
             },
             {
                 date: '2023 - Present',
@@ -193,7 +195,7 @@ const translations = {
             },
             {
                 date: '2022 - 2023',
-                title: '💼 Research Intern',
+                title: '💼 AI Research Engineer Intern',
                 location: 'SAP Labs, France',
                 description: 'Developed MultiPath2Vec, an attention-based model for security vulnerability detection in code commits. Applied NLP and deep learning techniques to software security.',
                 tags: ['NLP', 'Security', 'Industry']
@@ -329,7 +331,7 @@ const translations = {
                 desc: 'Miglior articolo in AI e Imaging per la Cura del Seno'
             },
             coOrganizer: {
-                title: 'Co-Organizzatore',
+                title: 'Co-Organizzatore Challenge',
                 org: 'TopBrain MICCAI 2025 Challenge',
                 desc: 'Coordinamento di una sfida internazionale sulla segmentazione cerebrale'
             },
@@ -355,7 +357,7 @@ const translations = {
             }
         },
         footer: {
-            subtitle: 'Dottorando in Deep Learning e Imaging Medico',
+            subtitle: 'AI Research Scientist | 3D Computer Vision & Deep Learning',
             quickLinks: 'Link Rapidi',
             connect: 'Connetti',
             home: 'Home',
@@ -367,10 +369,11 @@ const translations = {
             rights: 'Tutti i diritti riservati',
             builtWith: 'Realizzato con 💙 e ☕'
         },
+        // UPDATED: Optimized for Industry / Research Scientist Role (Italian)
         aboutText: [
-            "Sono un Dottorando al 3° anno presso la Sorbonne Université ed EURECOM, sotto la supervisione della Prof.ssa Maria A. Zuluaga. La mia ricerca di dottorato si concentra sulla Selezione Efficiente delle Annotazioni e Dataset Collaborativi per la Traduzione Clinica nella Segmentazione dei Vasi Cerebrali.",
-            "I miei interessi di ricerca spaziano dal Deep Learning, all'Imaging Medico 3D e alla Computer Vision, con particolare enfasi sulla selezione interpretabile e informativa dei dati. Ho dimostrato successo in collaborazioni internazionali e progetti multi-istituzionali, con due Early Acceptance a MICCAI 2025 (Top 9%) e comprovata traduzione della ricerca clinica nel mondo reale.",
-            "Prima del mio dottorato, ho completato un MSc. a Doppia Laurea in Data Science presso EURECOM e il Politecnico di Torino, e sono laureato in Ingegneria Biomedica. Sono appassionato di colmare il divario tra ricerca AI all'avanguardia e applicazioni cliniche."
+            "Sono un Dottorando presso Sorbonne Université ed EURECOM, specializzato in Deep Learning Data-Efficient e Visione Artificiale 3D. La mia ricerca affronta la sfida della 'Scarsità dei Dati' nell'IA, progettando framework di Active Learning e infrastrutture di annotazione collaborativa (MLOps) che riducono i costi di etichettatura massimizzando le prestazioni del modello.",
+            "Il mio lavoro sulla selezione interpretabile dei dati per topologie 3D complesse ha raggiunto risultati allo Stato dell'Arte, incluse due Early Acceptance al MICCAI 2025 (Top 9%). Unisco la ricerca teorica all'ingegneria di produzione, utilizzando l'imaging medico ad alta dimensione come banco di prova rigoroso per risolvere problemi universali di computer vision.",
+            "Prima del mio dottorato, ho completato un MSc. a Doppia Laurea in Data Science presso EURECOM e il Politecnico di Torino, e sono laureato in Ingegneria Biomedica. Mi dedico allo sviluppo di sistemi AI robusti e scalabili in ambienti reali ad alta criticità."
         ],
         skillsTitle: 'Competenze ed Esperienza',
         technicalProficiency: 'Competenza Tecnica',
@@ -380,14 +383,15 @@ const translations = {
             intermediate: 'Intermedio',
             beginner: 'Principiante'
         },
-        contactText: "Sono sempre disponibile a discutere collaborazioni di ricerca, nuove opportunità nell'imaging medico e nell'IA, o semplicemente chiacchierare di idee interessanti nel deep learning e nella computer vision.",
+        contactText: "Sono sempre disponibile a discutere collaborazioni di ricerca, nuove opportunità nell'IA e Computer Vision, o semplicemente chiacchierare di idee interessanti nel deep learning e infrastrutture scalabili.",
         timeline: [
+            // UPDATED: Reframed PhD as a Job/Role (Italian)
             {
                 date: '2023 - Presente (Fine Prevista: 2026)',
-                title: '🔬 Dottorando',
+                title: '🔬 AI Research Scientist (Dottorando)',
                 location: 'Sorbonne Université & EURECOM',
-                description: 'Ricerca di dottorato su Selezione Efficiente delle Annotazioni e Dataset Collaborativi per la Traduzione Clinica nella Segmentazione dei Vasi Cerebrali. Supervisore: Prof.ssa Maria A. Zuluaga.',
-                tags: ['Deep Learning', 'Imaging Medico', 'Ricerca']
+                description: 'Ricerca principale su Deep Learning Data-Efficient. Ingegnerizzazione di "VesselVerse", infrastruttura di annotazione collaborativa che riduce i costi di labeling. Risultati SOTA (Top 9% MICCAI) in Active Learning e Domain Adaptation.',
+                tags: ['Deep Learning', 'Computer Vision', 'MLOps']
             },
             {
                 date: '2023 - Presente',
@@ -398,7 +402,7 @@ const translations = {
             },
             {
                 date: '2022 - 2023',
-                title: '💼 Tirocinio di Ricerca',
+                title: '💼 AI Research Engineer Intern',
                 location: 'SAP Labs, France',
                 description: 'Sviluppo di MultiPath2Vec, un modello basato su attention per il rilevamento di vulnerabilità di sicurezza nei commit di codice. Applicazione di NLP e tecniche di deep learning per la sicurezza del software.',
                 tags: ['NLP', 'Sicurezza', 'Industria']
@@ -506,29 +510,6 @@ function setLanguage(lang) {
     // Update Skills title
     const skillsTitle = document.querySelector('.skills h3');
     if (skillsTitle) skillsTitle.textContent = translations[lang].skillsTitle;
-    
-    // Update Technical Proficiency title
-    const techTitle = document.querySelector('.skill-bars-section h4');
-    if (techTitle) {
-        const icon = techTitle.querySelector('svg');
-        techTitle.textContent = translations[lang].technicalProficiency;
-        if (icon) techTitle.prepend(icon);
-    }
-    
-    // Update skill level texts
-    const skillLevels = document.querySelectorAll('.skill-level-text');
-    skillLevels.forEach(levelEl => {
-        const currentText = levelEl.textContent.trim().toLowerCase();
-        if (currentText === 'expert' || currentText === 'esperto') {
-            levelEl.textContent = translations[lang].skillLevels.expert;
-        } else if (currentText === 'advanced' || currentText === 'avanzato') {
-            levelEl.textContent = translations[lang].skillLevels.advanced;
-        } else if (currentText === 'intermediate' || currentText === 'intermedio') {
-            levelEl.textContent = translations[lang].skillLevels.intermediate;
-        } else if (currentText === 'beginner' || currentText === 'principiante') {
-            levelEl.textContent = translations[lang].skillLevels.beginner;
-        }
-    });
     
     // Update contact section text
     const contactText = document.querySelector('.contact-content > p');
@@ -1037,9 +1018,6 @@ document.addEventListener('DOMContentLoaded', () => {
     // Animate statistics if present
     animateCounters();
     
-    // Initialize skill bar animations
-    animateSkillBars();
-    
     // Hide floating contact toolbar when the contact section is in view
     try {
         const floating = document.querySelector('.floating-contact');
@@ -1217,41 +1195,6 @@ function animateCounters() {
         });
         
         observer.observe(counter);
-    });
-}
-
-// Animate skill steps when they come into view
-function animateSkillBars() {
-    const skillItems = document.querySelectorAll('.skill-bar-item');
-    
-    const skillBarObserver = new IntersectionObserver((entries) => {
-        entries.forEach(entry => {
-            if (entry.isIntersecting) {
-                const skillItem = entry.target;
-                const steps = skillItem.querySelectorAll('.skill-step.filled');
-                
-                // Add a staggered animation for each filled step
-                steps.forEach((step, index) => {
-                    setTimeout(() => {
-                        step.style.transform = 'scale(1)';
-                        step.style.opacity = '1';
-                    }, 150 * (index + 1));
-                });
-                
-                skillBarObserver.unobserve(skillItem);
-            }
-        });
-    }, { threshold: 0.3 });
-    
-    skillItems.forEach(item => {
-        // Initially hide filled steps for animation
-        const steps = item.querySelectorAll('.skill-step.filled');
-        steps.forEach(step => {
-            step.style.transform = 'scale(0.8)';
-            step.style.opacity = '0';
-        });
-        
-        skillBarObserver.observe(item);
     });
 }
 
@@ -1865,19 +1808,62 @@ document.addEventListener('DOMContentLoaded', () => {
     new PresentationsCarousel();
 });
 
-// Add performance monitoring
-const logPerformance = () => {
-    if (window.performance && window.performance.timing) {
-        const perfData = window.performance.timing;
-        const pageLoadTime = perfData.loadEventEnd - perfData.navigationStart;
-        console.log(`⚡ Page loaded in ${pageLoadTime}ms`);
+// ==================== PIPELINE MODAL ====================
+document.addEventListener('DOMContentLoaded', () => {
+    const pipelineModal = document.getElementById('pipelineModal');
+    const pipelineModalImage = document.getElementById('pipelineModalImage');
+    const pipelineModalTitle = document.getElementById('pipelineModalTitle');
+    const pipelineCloseBtn = document.querySelector('.pipeline-modal-close');
+    
+    if (!pipelineModal) return;
+    
+    // Make project cards with pipeline data clickable
+    const projectCards = document.querySelectorAll('.project-card[data-pipeline]');
+    
+    projectCards.forEach(card => {
+        const pipelineSrc = card.getAttribute('data-pipeline');
+        const projectTitle = card.querySelector('.project-title')?.textContent?.trim() || 'Project Pipeline';
+        
+        // Add cursor pointer style
+        card.style.cursor = 'pointer';
+        
+        // Card click handler
+        card.addEventListener('click', (e) => {
+            // Don't trigger if clicking on links
+            if (e.target.closest('a')) {
+                return;
+            }
+            
+            pipelineModalImage.src = pipelineSrc;
+            pipelineModalTitle.textContent = projectTitle;
+            pipelineModal.classList.add('active');
+        });
+    });
+    
+    // Close modal
+    const closePipelineModal = () => {
+        pipelineModal.classList.remove('active');
+        pipelineModalImage.src = '';
+    };
+    
+    if (pipelineCloseBtn) {
+        pipelineCloseBtn.addEventListener('click', closePipelineModal);
     }
-};
-
-window.addEventListener('load', logPerformance);
-
-console.log('🎉 Daniele Falcetta\'s website loaded successfully!');
-console.log('💡 Press "T" to toggle dark mode');
+    
+    // Close when clicking outside
+    pipelineModal.addEventListener('click', (e) => {
+        if (e.target === pipelineModal) {
+            closePipelineModal();
+        }
+    });
+    
+    // Close with Escape key
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape' && pipelineModal.classList.contains('active')) {
+            closePipelineModal();
+        }
+    });
+});
 
 // ==================== PRESENTATION MODAL ====================
 document.addEventListener('DOMContentLoaded', () => {
