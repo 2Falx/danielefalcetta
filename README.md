@@ -121,14 +121,18 @@ If using a custom domain:
 - ✅ Safari 14+
 - ✅ Mobile browsers (iOS Safari, Chrome Mobile)
 
-## 🆕 Recent Updates
+## 🆕 Recent Updates (Summary of New Features)
 
-- **Bilingual support (English / Italian)**: site text now supports both languages with a language toggle; preference is saved in `localStorage`.
-- **Robust client-side translations**: nav, hero, about, timeline, projects, awards, collaborations, presentations, and footer are translated at runtime.
-- **Carousel UX improvements**: Collaborations and Presentations carousels now support click-to-center behavior — clicking a card (including cloned carousel items) centers it. Presentations open the modal when centered.
-- **Clone-safe translation fixes**: translations now update cloned carousel items too, avoiding language reversion during wrap-around.
-- **Layout tweaks**: central container max-width increased (1400px); About section allowed to expand with the central layout; central blocks kept centered.
-- **Floating contact toolbar**: four quick-contact icon buttons (Email, GitHub, LinkedIn, Google Scholar) appear as a fixed vertical toolbar on wide desktops (>=1200px). Buttons are slightly transparent until hovered.
+- **Interactive Project Pipelines**: Project cards are now clickable — clicking a card (not just an icon) opens a centered pipeline modal showing the project's architecture image. The modal is a body-level element for robust viewport centering and accessible close controls (click outside, Escape, close button).
+- **Improved Mobile UX & Touch Targets**: Spacing and touch target sizes for Toolbox, Skills, Timeline and other interactive areas were increased; carousels and buttons have better touch handling and swipe velocity detection.
+- **Carousels — Click to Center & Clone-Safe Translations**: Collaborations and Presentations carousels support click-to-center behavior. The implementation uses clone-safe mapping so cloned carousel cards (for infinite-scroll) receive correct translations and clicking them centers the original item.
+- **Presentations Modal Behavior**: Presentation cards center on click and open an embedded presentation modal (iframe) with title and external link. The modal preserves expected behaviors (close on Escape, clicking outside, stop iframe on close).
+- **Bilingual Content & Language Switcher Fixes**: Full English/Italian support added across nav, hero, about, timeline, projects, awards, collaborations, presentations, and footer. The language switcher now preserves HTML emphasis (uses `innerHTML` for About paragraphs) and updates cloned carousel nodes to avoid translation glitches.
+- **Content & Emphasis Updates**: Hero and About sections were updated with new copy for the 'Data-Efficiency' framing and now include emphasized phrases (`<strong>`) in both EN/IT for better readability.
+- **Layout & Styling Tweaks**: Central container max-width increased, larger desktop card sizes for Toolbox/Skills/Timeline, and refined animations for smoother, less jumpy transitions.
+- **Accessibility & Performance**: Continued focus on keyboard navigation, ARIA-friendly modals, optimized event handling (debounce/throttle), and lazy-loading assets to keep Lighthouse scores high.
+- **Developer notes**: Key interactive logic lives in `script.js` (translations object, carousels, modals, language switcher). If you clone the repo, run a local server and test both languages and mobile breakpoints. See the `script.js` comments for implementation details.
+
   
 ## 🔧 Performance
 
