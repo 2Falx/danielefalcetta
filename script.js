@@ -150,7 +150,7 @@ const translations = {
             }
         },
         footer: {
-            subtitle: 'AI Research Scientist | 3D Computer Vision & Deep Learning',
+            subtitle: 'AI Research Scientist | 3D Computer Vision & Data-Efficiency',
             quickLinks: 'Quick Links',
             connect: 'Connect',
             home: 'Home',
@@ -164,9 +164,9 @@ const translations = {
         },
         // UPDATED: Optimized for Industry / Research Scientist Role
         aboutText: [
-            "I am a PhD Candidate at Sorbonne Université and EURECOM, specializing in Data-Efficient Deep Learning and 3D Computer Vision. My research addresses the 'Data Scarcity' challenge in AI by architecting Active Learning frameworks and collaborative annotation infrastructures (MLOps) that reduce labeling costs while maximizing model performance.",
-            "My work on interpretable data selection for complex 3D topologies has achieved State-of-the-Art results, including two Early Acceptances at MICCAI 2025 (Top 9%). I bridge the gap between theoretical research and production engineering, using high-dimensional medical imaging as a rigorous testbed for solving universal computer vision problems.",
-            "Prior to my PhD, I completed a Double Degree MSc. in Data Science from EURECOM and Politecnico di Torino, and hold a BSc. in Biomedical Engineering. I am passionate about deploying robust, scalable AI systems in real-world, high-stakes environments."
+            "I am an <strong>AI Research Scientist (PhD Candidate)</strong> specializing in <strong>Data-Efficient Deep Learning</strong> and <strong>3D Computer Vision</strong>. My focus is solving the 'Data Scarcity' bottleneck by architecting scalable <strong>Active Learning</strong> frameworks and MLOps infrastructure that drastically reduce labeling costs while maximizing model performance.",
+            "My research on <strong>Data-Centric AI</strong> for complex 3D topologies has achieved State-of-the-Art results, securing two <strong>Top 9% acceptances at MICCAI 2025</strong>. I bridge the gap between theoretical research and production engineering, using high-dimensional medical imaging as a high-complexity sandbox to solve universal computer vision problems.",
+            "With a <strong>Double Degree MSc. in Data Science</strong> and a background in <strong>Biomedical Engineering</strong>, I am passionate about deploying robust, safety-critical AI systems in real-world environments."
         ],
         skillsTitle: 'Skills & Expertise',
         technicalProficiency: 'Technical Proficiency',
@@ -357,7 +357,7 @@ const translations = {
             }
         },
         footer: {
-            subtitle: 'AI Research Scientist | 3D Computer Vision & Deep Learning',
+            subtitle: 'AI Research Scientist | 3D Computer Vision & Data-Efficiency',
             quickLinks: 'Link Rapidi',
             connect: 'Connetti',
             home: 'Home',
@@ -371,9 +371,9 @@ const translations = {
         },
         // UPDATED: Optimized for Industry / Research Scientist Role (Italian)
         aboutText: [
-            "Sono un Dottorando presso Sorbonne Université ed EURECOM, specializzato in Deep Learning Data-Efficient e Visione Artificiale 3D. La mia ricerca affronta la sfida della 'Scarsità dei Dati' nell'IA, progettando framework di Active Learning e infrastrutture di annotazione collaborativa (MLOps) che riducono i costi di etichettatura massimizzando le prestazioni del modello.",
-            "Il mio lavoro sulla selezione interpretabile dei dati per topologie 3D complesse ha raggiunto risultati allo Stato dell'Arte, incluse due Early Acceptance al MICCAI 2025 (Top 9%). Unisco la ricerca teorica all'ingegneria di produzione, utilizzando l'imaging medico ad alta dimensione come banco di prova rigoroso per risolvere problemi universali di computer vision.",
-            "Prima del mio dottorato, ho completato un MSc. a Doppia Laurea in Data Science presso EURECOM e il Politecnico di Torino, e sono laureato in Ingegneria Biomedica. Mi dedico allo sviluppo di sistemi AI robusti e scalabili in ambienti reali ad alta criticità."
+            "Sono un <strong>AI Research Scientist (PhD Candidate)</strong> specializzato in <strong>Data-Efficient Deep Learning</strong> e <strong>3D Computer Vision</strong>. Il mio obiettivo è risolvere il problema della 'Data Scarcity' progettando framework scalabili di <strong>Active Learning</strong> e infrastrutture MLOps che riducono drasticamente i costi di annotazione massimizzando al contempo le prestazioni dei modelli.",
+            "La mia ricerca sulla <strong>Data-Centric AI</strong> per topologie 3D complesse ha raggiunto risultati allo Stato dell'Arte (SOTA), ottenendo due accettazioni Top 9% alla conferenza MICCAI 2025. Colmo il divario tra ricerca teorica e ingegneria di produzione, utilizzando l'imaging medico ad alta dimensione come una 'sandbox' ad alta complessità per risolvere problemi universali di Computer Vision.",
+            "Con una <strong>doppia laurea magistrale in Data Science</strong> e un background in <strong>Ingegneria Biomedica</strong>, mi appassiona lo sviluppo e il deployment di sistemi AI robusti e safety-critical in ambienti reali."
         ],
         skillsTitle: 'Competenze ed Esperienza',
         technicalProficiency: 'Competenza Tecnica',
@@ -499,11 +499,11 @@ function setLanguage(lang) {
     if (collaborationsTitle) collaborationsTitle.textContent = translations[lang].sectionTitles.collaborations;
     if (contactTitle) contactTitle.textContent = translations[lang].sectionTitles.contact;
     
-    // Update about section paragraphs
+    // Update about section paragraphs (use innerHTML so <strong> markup is preserved)
     const aboutParagraphs = document.querySelectorAll('.about-text > p');
     translations[lang].aboutText.forEach((text, index) => {
         if (aboutParagraphs[index]) {
-            aboutParagraphs[index].textContent = text;
+            aboutParagraphs[index].innerHTML = text;
         }
     });
     
