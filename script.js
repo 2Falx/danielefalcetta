@@ -238,6 +238,7 @@ const translations = {
         ]
         ,
         presentations: [
+            { title: 'Journal Club Presentation #5', venue: 'EURECOM • 2025 🇫🇷' },
             { title: 'Doctoral Consortium - Finalist', venue: 'MICCAI 2025 • South Korea 🇰🇷' },
             { title: 'VesselVerse - Spotlight Presentation', venue: 'MICCAI 2025 • South Korea 🇰🇷' },
             { title: 'MICCAI Highlights', venue: 'EURECOM • 2025 🇫🇷' },
@@ -445,6 +446,7 @@ const translations = {
         ]
         ,
         presentations: [
+            { title: 'Journal Club Presentazione #5', venue: 'EURECOM • 2025 🇫🇷' },
             { title: 'Doctoral Consortium - Finalista', venue: 'MICCAI 2025 • Corea del Sud 🇰🇷' },
             { title: 'VesselVerse - Presentazione Spotlight', venue: 'MICCAI 2025 • Corea del Sud 🇰🇷' },
             { title: 'Highlights MICCAI', venue: 'EURECOM • 2025 🇫🇷' },
