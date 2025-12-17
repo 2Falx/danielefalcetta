@@ -238,6 +238,7 @@ const translations = {
         ]
         ,
         presentations: [
+            { title: 'Invited Industrial Talk', venue: 'Viz.ai • 2025  🇮🇱' },
             { title: 'Journal Club Presentation #5', venue: 'EURECOM • 2025 🇫🇷' },
             { title: 'Doctoral Consortium - Finalist', venue: 'MICCAI 2025 • South Korea 🇰🇷' },
             { title: 'VesselVerse - Spotlight Presentation', venue: 'MICCAI 2025 • South Korea 🇰🇷' },
@@ -446,6 +447,7 @@ const translations = {
         ]
         ,
         presentations: [
+            { title: 'Presentazione in Azienda', venue: 'Viz.ai • 2025  🇮🇱' },
             { title: 'Journal Club Presentazione #5', venue: 'EURECOM • 2025 🇫🇷' },
             { title: 'Doctoral Consortium - Finalista', venue: 'MICCAI 2025 • Corea del Sud 🇰🇷' },
             { title: 'VesselVerse - Presentazione Spotlight', venue: 'MICCAI 2025 • Corea del Sud 🇰🇷' },
