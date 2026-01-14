@@ -60,7 +60,7 @@ const translations = {
         showLess: 'Show Less',
         statLabels: {
             publications: 'Publications',
-            miccai: 'MICCAI 2025 Early Acceptances',
+            miccai: 'MICCAI 2025 \nEarly Acceptances',
             projects: 'Featured Projects',
             awards: 'Awards & Honors'
         },
@@ -79,7 +79,7 @@ const translations = {
         projects: {
             caravelMetrics: {
                 title: 'CaravelMetrics',
-                description: 'Advanced metrics and evaluation framework for vessel segmentation analysis. Comprehensive toolset for assessing vascular structure segmentation quality. Submitted to ISBI 2026.'
+                description: 'Advanced metrics and evaluation framework for vessel segmentation analysis. Comprehensive toolset for assessing vascular structure segmentation quality. Accepted at ISBI 2026.'
             },
             vesselVerse: {
                 title: 'VesselVerse',
@@ -288,7 +288,7 @@ const translations = {
         projects: {
             caravelMetrics: {
                 title: 'CaravelMetrics',
-                description: 'Framework avanzato di metriche e valutazione per l\'analisi della segmentazione vascolare. Toolkit completo per valutare la qualità della segmentazione delle strutture vascolari. Sottomesso a ISBI 2026.'
+                description: 'Framework avanzato di metriche e valutazione per l\'analisi della segmentazione vascolare. Toolkit completo per valutare la qualità della segmentazione delle strutture vascolari. Accettato a ISBI 2026.'
             },
             vesselVerse: {
                 title: 'VesselVerse',
