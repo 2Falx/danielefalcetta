@@ -1,6 +1,6 @@
 # Daniele Falcetta - Personal Website
 
-[![Live Website](https://img.shields.io/badge/Live-danielefalcetta.github.io-blue?style=flat-square)](https://danielefalcetta.github.io)
+[![Live Website](https://img.shields.io/badge/Live-danielefalcetta.github.io-blue?style=flat-square)](https://2falx.github.io/danielefalcetta/)
 [![License](https://img.shields.io/badge/License-MIT-green?style=flat-square)](LICENSE)
 
 Modern, responsive personal website showcasing my research in Deep Learning and Medical Imaging.
