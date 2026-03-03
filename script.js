@@ -164,7 +164,7 @@ const translations = {
         },
         // UPDATED: Optimized for Industry / Research Scientist Role
         aboutText: [
-            "I am an <strong>AI Research Scientist (PhD Candidate)</strong> specializing in <strong>Data-Efficient Deep Learning</strong> and <strong>3D Computer Vision</strong>. My focus is solving the 'Data Scarcity' bottleneck by architecting scalable <strong>Active Learning</strong> frameworks and MLOps infrastructure that drastically reduce labeling costs while maximizing model performance.",
+            "I am an <strong>AI Research Scientist (PhD)</strong> specializing in <strong>Data-Efficient Deep Learning</strong> and <strong>3D Computer Vision</strong>. My focus is solving the 'Data Scarcity' bottleneck by architecting scalable <strong>Active Learning</strong> frameworks and MLOps infrastructure that drastically reduce labeling costs while maximizing model performance.",
             "My research on <strong>Data-Centric AI</strong> for complex 3D topologies has achieved State-of-the-Art results, securing two <strong>Top 9% acceptances at MICCAI 2025</strong>. I bridge the gap between theoretical research and production engineering, using high-dimensional medical imaging as a high-complexity sandbox to solve universal computer vision problems.",
             "With a <strong>Double Degree MSc. in Data Science</strong> and a background in <strong>Biomedical Engineering</strong>, I am passionate about deploying robust, safety-critical AI systems in real-world environments."
         ],
@@ -180,14 +180,15 @@ const translations = {
         timeline: [
             // UPDATED: Reframed PhD as a Job/Role
             {
-                date: '2023 - Early 2026',
-                title: '🔬 AI Research Scientist (PhD Candidate)',
+                date: '2023 - Feb. 2026',
+                title: '🔬 AI Research Scientist (PhD)',
+
                 location: 'Sorbonne Université & EURECOM',
                 description: 'Leading research on Data-Efficient Deep Learning. Architected "VesselVerse," a collaborative annotation infrastructure reducing labeling costs for 3D segmentation. Achieved SOTA results (Top 9% MICCAI) in Active Learning and Domain Adaptation.',
                 tags: ['Deep Learning', 'Computer Vision', 'MLOps']
             },
             {
-                date: '2023 - Present',
+                date: '2023 - 2026',
                 title: '👨‍🏫 Teaching Assistant',
                 location: 'EURECOM',
                 description: "Teaching Assistant for MALIS (Machine Learning and Intelligent Systems) course and labs. Supporting graduate students in machine learning theory and practical implementations.",
@@ -225,7 +226,7 @@ const translations = {
         loadingText: "Loading...",
         collaborations: [
             { name: 'EURECOM', location: '📍 Sophia Antipolis, France', role: 'Main Research Center', tags: ['Computer Vision', 'Medical AI'] },
-            { name: 'Sorbonne Université', location: '📍 Biot, France', role: 'PhD Host Institution', tags: ['Neuroimaging', 'Clinical Research'] },
+            { name: 'Sorbonne Université', location: '📍 Biot, France', role: 'PhD Alma Mater', tags: ['Neuroimaging', 'Clinical Research'] },
             { name: 'GIN Grenoble', location: '📍 Grenoble, France', role: 'Neurology Institute', tags: ['Neurology', 'Research'] },
             { name: 'INRIA', location: '📍 Sophia Antipolis, France', role: 'National Research Institute', tags: ['Algorithms', 'Imaging'] },
             { name: 'King\'s College London', location: '📍 London, UK', role: 'Clinical Research', tags: ['Clinical Trials', 'Collaboration'] },
@@ -238,6 +239,7 @@ const translations = {
         ]
         ,
         presentations: [
+            { title: 'PhD Dissertation Defense', venue: 'EURECOM • 2026 🇫🇷' },
             { title: 'Invited Industrial Talk', venue: 'Viz.ai • 2025  🇮🇱' },
             { title: 'Journal Club Presentation #5', venue: 'EURECOM • 2025 🇫🇷' },
             { title: 'Doctoral Consortium - Finalist', venue: 'MICCAI 2025 • South Korea 🇰🇷' },
@@ -373,7 +375,7 @@ const translations = {
         },
         // UPDATED: Optimized for Industry / Research Scientist Role (Italian)
         aboutText: [
-            "Sono un <strong>AI Research Scientist (PhD Candidate)</strong> specializzato in <strong>Data-Efficient Deep Learning</strong> e <strong>3D Computer Vision</strong>. Il mio obiettivo è risolvere il problema della 'Data Scarcity' progettando framework scalabili di <strong>Active Learning</strong> e infrastrutture MLOps che riducono drasticamente i costi di annotazione massimizzando al contempo le prestazioni dei modelli.",
+            "Sono un <strong>AI Research Scientist (PhD)</strong> specializzato in <strong>Data-Efficient Deep Learning</strong> e <strong>3D Computer Vision</strong>. Il mio obiettivo è risolvere il problema della 'Data Scarcity' progettando framework scalabili di <strong>Active Learning</strong> e infrastrutture MLOps che riducono drasticamente i costi di annotazione massimizzando al contempo le prestazioni dei modelli.",
             "La mia ricerca sulla <strong>Data-Centric AI</strong> per topologie 3D complesse ha raggiunto risultati allo Stato dell'Arte (SOTA), ottenendo due accettazioni Top 9% alla conferenza MICCAI 2025. Colmo il divario tra ricerca teorica e ingegneria di produzione, utilizzando l'imaging medico ad alta dimensione come una 'sandbox' ad alta complessità per risolvere problemi universali di Computer Vision.",
             "Con una <strong>doppia laurea magistrale in Data Science</strong> e un background in <strong>Ingegneria Biomedica</strong>, mi appassiona lo sviluppo e il deployment di sistemi AI robusti e safety-critical in ambienti reali."
         ],
@@ -389,14 +391,14 @@ const translations = {
         timeline: [
             // UPDATED: Reframed PhD as a Job/Role (Italian)
             {
-                date: '2023 - Presente (Fine Prevista: 2026)',
-                title: '🔬 AI Research Scientist (Dottorando)',
+                date: '2023 - Feb. 2026',
+                title: '🔬 AI Research Scientist (Dottore di Ricerca)',
                 location: 'Sorbonne Université & EURECOM',
                 description: 'Ricerca principale su Deep Learning Data-Efficient. Ingegnerizzazione di "VesselVerse", infrastruttura di annotazione collaborativa che riduce i costi di labeling. Risultati SOTA (Top 9% MICCAI) in Active Learning e Domain Adaptation.',
                 tags: ['Deep Learning', 'Computer Vision', 'MLOps']
             },
             {
-                date: '2023 - Presente',
+                date: '2023 - 2026',
                 title: '👨‍🏫 Assistente alla Didattica',
                 location: 'EURECOM',
                 description: 'Assistente alla didattica per il corso MALIS (Machine Learning and Intelligent Systems) e relativi laboratori. Supporto agli studenti magistrali in teoria e pratica del machine learning.',
@@ -447,6 +449,7 @@ const translations = {
         ]
         ,
         presentations: [
+            { title: 'Dissertazione Tesi di Dottorato', venue: 'EURECOM • 2026 🇫🇷' },
             { title: 'Presentazione in Azienda', venue: 'Viz.ai • 2025  🇮🇱' },
             { title: 'Journal Club Presentazione #5', venue: 'EURECOM • 2025 🇫🇷' },
             { title: 'Doctoral Consortium - Finalista', venue: 'MICCAI 2025 • Corea del Sud 🇰🇷' },

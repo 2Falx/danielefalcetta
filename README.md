@@ -164,5 +164,5 @@ This project is open source and available under the [MIT License](LICENSE).
 
 ---
 
-**Built with 💙 and ☕ by Daniele Falcetta**  
-*Doctoral Researcher in Deep Learning & Medical Imaging*
+**Built with 💙 and ☕ by Daniele Falcetta, PhD**  
+*AI Researcher in Deep Learning & Medical Imaging*
