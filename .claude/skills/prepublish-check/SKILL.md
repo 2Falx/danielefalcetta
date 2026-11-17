@@ -34,7 +34,7 @@ Poi cerca nel codice sorgente (`src/`, `public/`, `astro.config.mjs`):
 | emoji | richiesta dell'utente | assenti |
 
 Immagini in `public/` (non passano dalla pipeline di Astro): controlla i metadati EXIF/GPS con Pillow e rimuovili.
-Il PDF del CV in `public/cv/`: ricordati che contiene telefono ed email personali (vedi sezione 3).
+Il PDF del CV in `public/cv/`: è una versione senza numero di telefono (oscuramento vero, un solo livello di testo leggibile dagli ATS). Verifica con `pdftotext public/cv/Daniele_Falcetta_CV.pdf -` che il numero non ci sia e che il testo non sia duplicato. Se il CV viene sostituito, rifai la versione senza telefono.
 
 ## 2. Cosa controllare e cosa riportare
 
@@ -74,7 +74,7 @@ Il PDF del CV in `public/cv/`: ricordati che contiene telefono ed email personal
 - Loghi e marchi di terzi oggi in uso, da verificare con le linee guida di marchio di ciascuno:
   - loghi delle organizzazioni (Accenture, SAP, Sorbonne Université, EURECOM, Politecnico di Torino) in home e in Esperienza, mostrati come sagome monocromatiche che prendono il colore del marchio al passaggio del mouse (`Logo.astro`): l'alterazione del colore potrebbe non essere ammessa;
   - loghi di framework e strumenti nelle competenze e nei chip della home (`TechLogo.astro`, `src/assets/logos/tech/`: Simple Icons CC0, Azure e OpenAI da Wikimedia Commons), solo strumenti presenti nel CV;
-  - copertine dei talk (`src/assets/talks/*.jpg`, prima slide di ogni deck): mostrano nomi di coautori e membri della commissione, una foto di Daniele e loghi di ERC, ANR, UE, MICCAI e delle istituzioni; `seminars-1.jpg` è la grafica ufficiale di MICCAI 2025 (con una foto del centro congressi di Daejeon) e `seminars-3.jpg` contiene un'illustrazione di cervello/circuito di origine da verificare. La copertina TopCoW (foto di una mucca di fonte ignota) non è pubblicata e lo script non la cattura (`SKIP`); i journal club non hanno copertina. Sono già pubbliche nei deck, ma vanno confermate.
+  - copertine dei talk (`src/assets/talks/*.jpg`, prima slide di ogni deck): mostrano nomi di coautori e membri della commissione, una foto di Daniele e loghi di ERC, ANR, UE, MICCAI e delle istituzioni. Sono già pubbliche nei deck, ma vanno confermate. Non pubblicate per immagini di terzi: la copertina TopCoW (foto di una mucca di fonte ignota, `SKIP` nello script) e le copertine dei seminari (grafica ufficiale di MICCAI 2025 con foto del centro congressi; illustrazione di origine ignota; i journal club possono mostrare lavori altrui): la card dei seminari mostra fogli neutri (`GROUP_COVERS = {}`).
 - Finanziamento ERC/UE: se si presentano risultati di un progetto finanziato (CARAVEL), verificare gli obblighi di riconoscimento del finanziamento previsti dal grant agreement (dicitura ed emblema UE).
 
 ### Dati professionali obbligatori
@@ -91,7 +91,7 @@ Rispondi in italiano, senza emoji, con tre sezioni:
 3. **Da verificare prima di pubblicare** – lista numerata; per ogni voce: cosa verificare, perché (norma o rischio), come verificarlo, chi può farlo. Includi sempre, finché restano aperte:
    - autorizzazione del fotografo per il ritratto;
    - policy aziendale su comunicazioni esterne e menzione del datore di lavoro;
-   - dati personali nel CV in PDF (numero di telefono): tenerli o pubblicare una versione senza;
+   - contenuto del CV in PDF: coerenza con il sito (titolo, affermazioni come "SOTA", "Top 9%", "70%") e assenza del telefono;
    - licenze delle figure dei paper;
    - fonti dei numeri e dei riconoscimenti citati;
    - obblighi di riconoscimento del finanziamento ERC;

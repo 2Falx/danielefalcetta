@@ -53,7 +53,11 @@ export const talks: Talk[] = [
   },
   {
     slug: 'vesselmetrics-2025',
-    title: { en: 'VesselMetrics, 3D vessel morphometry', it: 'VesselMetrics, morfometria 3D dei vasi' },
+    // VesselMetrics was the earlier name of CaravelMetrics (confirmed by Daniele).
+    title: {
+      en: 'VesselMetrics (now CaravelMetrics), 3D vessel morphometry',
+      it: 'VesselMetrics (oggi CaravelMetrics), morfometria 3D dei vasi',
+    },
     where: { en: 'GIN Grenoble, France', it: 'GIN Grenoble, Francia' },
     year: '2025',
     deck: '2PACX-1vSGJuSTOjUmQ2TEBkeQ14UMcfGJwIqfFJxMqTaW5mztRjUqtDRMLG5fqsw7yxnZMDoO1uaT87Kfx6Wo',

@@ -21,7 +21,7 @@ export interface Project {
   summary: L10n;
   figure?: { src: ImageMetadata; alt: L10n };
   links: Link[];
-  /** Funded by the ERC CARAVEL project. */
+  /** Work done within CARAVEL, an ERC-funded research project Daniele was part of. */
   erc?: boolean;
   /** Shown on Home and with its figure on Research; the others are compact text rows. */
   featured?: boolean;
