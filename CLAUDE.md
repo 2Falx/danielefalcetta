@@ -100,6 +100,8 @@ contatori, niente gradienti decorativi, niente loghi a muro.
 Skill di progetto (scritte per questo sito):
 - `prepublish-check` – controllo privacy/cookie/accessibilità/contenuti/diritti prima di pubblicare.
 - `site-content` – aggiornare contenuti da CV/LinkedIn (esperienze, pubblicazioni, talk).
+- `scholar-sync` – aggiungere le pubblicazioni nuove dal profilo Google Scholar, verificate alla fonte
+  (`scripts/scholar_diff.py` trova quelle mancanti; `scripts/scholar_ignore.json` elenca i duplicati gestiti).
 
 Skill installate da GitHub (vedi `skills-lock.json`): `frontend-design`, `impeccable`, `design-taste-frontend`, `ui-ux-pro-max`,
 `web-design-guidelines`, `writing-guidelines`, `emil-design-eng`, `animate`, `review-animations`, `animation-performance`, `mobile-native`,

@@ -132,7 +132,7 @@ export const projects: Project[] = [
       it: 'Un benchmark per la segmentazione anatomica, attenta alla topologia, del circolo di Willis (la struttura disegnata in cima a questa pagina) su CTA e MRA.',
     },
     links: [
-      { label: paper, href: 'https://arxiv.org/abs/2312.17670' },
+      { label: paper, href: 'https://doi.org/10.1056/AIdbp2500994' },
       { label: { en: 'Challenge website', it: 'Sito della challenge' }, href: 'https://topcow24.grand-challenge.org/topcow24/' },
     ],
   },
@@ -154,7 +154,7 @@ export interface Publication {
   venue: string;
   year: string;
   href?: string;
-  kind: 'conference' | 'journal' | 'workshop' | 'abstract' | 'preprint';
+  kind: 'conference' | 'journal' | 'workshop' | 'abstract' | 'preprint' | 'thesis';
   notes?: L10n[];
   /**
    * First-author paper already presented as a project above: the author line
@@ -165,6 +165,31 @@ export interface Publication {
 
 export const publications: Publication[] = [
   {
+    title: 'Deep Probabilistic Cerebrovascular Atlas',
+    authors:
+      'X. Zhang, M. Dannecker, J. Cleary, D. Falcetta, K. Yang, B. Menze, Y. Shi, S. Wegener, S. Ourselin, D. Rueckert, M.A. Zuluaga',
+    venue: 'Medical Image Computing and Computer Assisted Intervention (MICCAI), LNCS, pp. 475–485',
+    year: '2026',
+    href: 'https://doi.org/10.1007/978-3-032-38186-6_45',
+    kind: 'conference',
+  },
+  {
+    title: 'The TopCoW Challenge — Topology-Aware Circle of Willis Segmentation for CT and MR Angiography',
+    authors: 'K. Yang, F. Musio, Y. Ma, N. Juchler, …, D. Falcetta, et al.',
+    venue: 'NEJM AI, vol. 3, no. 8',
+    year: '2026',
+    href: 'https://doi.org/10.1056/AIdbp2500994',
+    kind: 'journal',
+  },
+  {
+    title: 'TopBrain Segmentation Challenge for Whole Brain Vessel Anatomy',
+    authors: 'K. Yang, P. Shi, H. Huang, …, D. Falcetta, et al.',
+    venue: 'medRxiv',
+    year: '2026',
+    href: 'https://doi.org/10.64898/2026.05.28.26354312',
+    kind: 'preprint',
+  },
+  {
     hasProject: true,
     title: 'An Automated Framework for Large-Scale Graph-Based Cerebrovascular Analysis',
     authors: 'D. Falcetta, et al.',
@@ -172,6 +197,15 @@ export const publications: Publication[] = [
     year: '2026',
     href: 'https://arxiv.org/abs/2512.03869',
     kind: 'conference',
+  },
+  {
+    title: 'Advancing Brain Vessel Analysis: From Annotation-Efficient Selection to Population-Scale Insights',
+    authors: 'D. Falcetta',
+    venue: 'Sorbonne Université & EURECOM',
+    year: '2026',
+    href: 'https://www.eurecom.fr/en/publication/8554',
+    kind: 'thesis',
+    notes: [{ en: 'PhD', it: 'Dottorato' }],
   },
   {
     hasProject: true,
@@ -222,20 +256,21 @@ export const publications: Publication[] = [
     notes: [{ en: '* equal contribution', it: '* contributo paritario' }],
   },
   {
-    title: 'Benchmarking the CoW with the TopCoW Challenge: Topology-Aware Anatomical Segmentation of the Circle of Willis for CTA and MRA',
-    authors: 'K. Yang, F. Musio, Y. Ma, …, D. Falcetta, et al.',
-    venue: 'arXiv:2312.17670',
-    year: '2024',
-    href: 'https://arxiv.org/abs/2312.17670',
-    kind: 'preprint',
-  },
-  {
     title: 'A2V: A Semi-Supervised Domain Adaptation Framework for Brain Vessel Segmentation via Two-Phase Training Angiography-to-Venography Translation',
     authors: 'F. Galati, D. Falcetta, et al.',
     venue: 'British Machine Vision Conference (BMVC)',
     year: '2023',
     href: 'https://arxiv.org/abs/2309.06075',
     kind: 'conference',
+  },
+  {
+    title: 'Analyzing Advanced Code Representations with Machine Learning',
+    authors: 'D. Falcetta',
+    venue: 'Politecnico di Torino',
+    year: '2023',
+    href: 'https://webthesis.biblio.polito.it/26681/',
+    kind: 'thesis',
+    notes: [{ en: 'MSc', it: 'Laurea magistrale' }],
   },
 ];
 
@@ -245,6 +280,7 @@ export const kindLabel: Record<Publication['kind'], L10n> = {
   workshop: { en: 'Workshop', it: 'Workshop' },
   abstract: { en: 'Abstract', it: 'Abstract' },
   preprint: { en: 'Preprint', it: 'Preprint' },
+  thesis: { en: 'Thesis', it: 'Tesi' },
 };
 
 /** Stable anchor id for a project, used for links from the home page. */

@@ -1,0 +1,14 @@
+[
+  {
+    "title": "Benchmarking the cow with the topcow challenge: Topology-aware anatomical segmentation of the circle of willis for cta and mra",
+    "reason": "arXiv preprint (v4) of the NEJM AI 2026 TopCoW paper, which is on the site"
+  },
+  {
+    "title": "TopCoW: benchmarking topology-aware anatomical segmentation of the circle of willis (CoW) for CTA and MRA",
+    "reason": "arXiv preprint of the NEJM AI 2026 TopCoW paper, which is on the site"
+  },
+  {
+    "title": "Annotation-Efficient Selection and Collaborative Datasets for Clinical Translation in Brain Vessel Segmentation",
+    "reason": "MICCAI 2025 Doctoral Consortium talk (EURECOM record); listed on the Talks page, not a publication"
+  }
+]
