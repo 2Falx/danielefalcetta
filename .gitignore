@@ -1,10 +1,21 @@
-# Ignore generated or local files
-README.pdf
-.DS_Store
+# Build output and dependencies
+dist/
+.astro/
 node_modules/
-.env
+
+# Python tooling (uv venv used for Playwright checks)
+.venv/
 __pycache__/
+
+# Local artefacts
+.screenshots/
 *.log
+.env
+.DS_Store
+README.pdf
 CV_Industry_Research.md
 CV_Industry_Research.pdf
 CV_ACADEMIC.pdf
+
+# Original portrait (the site uses src/assets/portrait.jpg)
+FOTO_PROFILO.jpg

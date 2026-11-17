@@ -1,0 +1,68 @@
+---
+/**
+ * Organisation logo drawn as a single-colour silhouette (CSS mask filled with
+ * currentColor), so every logo shares one visual weight and works in both
+ * themes. On hover the silhouette takes the organisation's brand colour.
+ *
+ * Trademarks belong to their owners; logos are used only to name the
+ * organisations Daniele works or studied at. See prepublish-check.
+ */
+import { getImage } from 'astro:assets';
+import accentureRaw from '../assets/logos/accenture.svg?raw';
+import sapRaw from '../assets/logos/sap.svg?raw';
+import eurecom from '../assets/logos/eurecom.png';
+import sorbonne from '../assets/logos/sorbonne.png';
+import polito from '../assets/logos/polito.png';
+
+export type LogoName = 'accenture' | 'sap' | 'eurecom' | 'sorbonne' | 'polito';
+
+interface Props {
+  name: LogoName;
+  /** Rendered height in rem. */
+  height?: number;
+  class?: string;
+}
+
+const { name, height = 1.6, class: cls } = Astro.props;
+
+const svgUri = (raw: string) => `data:image/svg+xml,${encodeURIComponent(raw)}`;
+const png = async (src: ImageMetadata) => (await getImage({ src, format: 'webp', height: 96 })).src;
+
+const logos: Record<LogoName, { label: string; brand: string; ratio: number; url: () => Promise<string> | string; scale?: number }> = {
+  accenture: { label: 'Accenture', brand: '#a100ff', ratio: 163.4 / 43, url: () => svgUri(accentureRaw), scale: 0.82 },
+  sap: { label: 'SAP', brand: '#0faaff', ratio: 24 / 11.872, url: () => svgUri(sapRaw), scale: 0.9 },
+  eurecom: { label: 'EURECOM', brand: '#1ba1e2', ratio: eurecom.width / eurecom.height, url: () => png(eurecom), scale: 1.2 },
+  sorbonne: { label: 'Sorbonne Université', brand: '#e1000f', ratio: sorbonne.width / sorbonne.height, url: () => png(sorbonne) },
+  polito: { label: 'Politecnico di Torino', brand: '#003c71', ratio: polito.width / polito.height, url: () => png(polito) },
+};
+
+const logo = logos[name];
+const url = await logo.url();
+const h = height * (logo.scale ?? 1);
+---
+
+<span
+  class:list={['logo', cls]}
+  role="img"
+  aria-label={logo.label}
+  title={logo.label}
+  style={`--mask:url("${url}");--brand:${logo.brand};height:${h}rem;width:${(h * logo.ratio).toFixed(3)}rem`}
+></span>
+
+<style>
+  .logo {
+    display: inline-block;
+    flex: none;
+    background-color: currentColor;
+    -webkit-mask: var(--mask) center / contain no-repeat;
+    mask: var(--mask) center / contain no-repeat;
+    transition: background-color 220ms ease;
+  }
+
+  @media (hover: hover) {
+    .logo:hover,
+    :global(a:hover) > .logo {
+      background-color: var(--brand);
+    }
+  }
+</style>

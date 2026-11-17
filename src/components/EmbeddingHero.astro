@@ -1,0 +1,380 @@
+---
+/**
+ * Home hero scene: "Retrieval in an embedding space" (src/lib/embedding.ts).
+ * Blue is the corpus (documents grouped by topic, linked to their nearest
+ * neighbours); red is retrieval (a query walks the graph and links to its six
+ * nearest documents). Server-rendered at a fixed frame, so it is complete
+ * without JavaScript; the client script rotates it slowly, cycles through the
+ * queries, follows the pointer and can be dragged. Pause button (WCAG 2.2.2).
+ * Reduced motion: the static frame, no loop, drag still works.
+ * Use it at most once per page.
+ */
+import { type Lang, t } from '../i18n/ui';
+import { H, STATIC_T, U, W, frame, restView } from '../lib/embedding';
+import ScenePause from './ScenePause.astro';
+
+interface Props {
+  lang: Lang;
+}
+
+const { lang } = Astro.props;
+const fr = frame(STATIC_T, restView);
+const qr = 6 * U * fr.qScale;
+const viewBox = `0 0 ${W * U} ${H * U}`;
+---
+
+<div class="scene emb-scene" data-emb-scene>
+  <figure class="emb" data-emb>
+    <div class="emb__stage">
+      <svg viewBox={viewBox} role="img" aria-labelledby="emb-title emb-desc" class="emb__svg">
+        <title id="emb-title">{t(lang, 'emb.title')}</title>
+        <desc id="emb-desc">{t(lang, 'emb.desc')}</desc>
+        <g class="emb__corpus">
+          <path class="emb__halos" d={fr.halos} data-l="halos"></path>
+          <path class="emb__links emb__links--far" d={fr.linksFar} data-l="linksFar"></path>
+          <path class="emb__links emb__links--near" d={fr.linksNear} data-l="linksNear"></path>
+          <path class="emb__docs emb__docs--far" d={fr.far} data-l="far"></path>
+          <path class="emb__docs emb__docs--mid" d={fr.mid} data-l="mid"></path>
+          <path class="emb__docs emb__docs--near" d={fr.near} data-l="near"></path>
+        </g>
+        <g class="emb__retrieval" opacity={fr.out}>
+          <path class="emb__walk" d={fr.walk} opacity={(fr.walkOpacity * 0.85).toFixed(2)} data-l="walk"></path>
+          <path class="emb__fan" d={fr.fan} data-l="fan"></path>
+          <path class="emb__hits-under" d={fr.hits} data-l="hitsUnder"></path>
+          <path class="emb__hits" d={fr.hits} data-l="hits"></path>
+          <g class="emb__q" transform={`translate(${Math.round(fr.qx * U)} ${Math.round(fr.qy * U)})`}>
+            <circle class="emb__qhalo" r={Math.round((6 + 34 * fr.halo) * U)} opacity={((1 - fr.halo) * 0.7).toFixed(2)}></circle>
+            <circle class="emb__query" r={qr.toFixed(1)}></circle>
+          </g>
+        </g>
+      </svg>
+    </div>
+    <figcaption>{t(lang, 'emb.caption')}</figcaption>
+  </figure>
+  <ScenePause lang={lang} />
+</div>
+
+<script>
+  import { STATIC_T, U, frame, restView, type Frame } from '../lib/embedding';
+  import { bindScenePause } from '../lib/scene-pause';
+
+  const scene = document.querySelector<HTMLElement>('[data-emb-scene]');
+  const fig = scene?.querySelector<HTMLElement>('[data-emb]');
+  const svg = fig?.querySelector('svg');
+
+  if (scene && fig && svg) {
+    const reduce = window.matchMedia('(prefers-reduced-motion: reduce)');
+    const finePointer = window.matchMedia('(hover: hover) and (pointer: fine)');
+    const coarse = window.matchMedia('(pointer: coarse)');
+    const stage = fig.querySelector<HTMLElement>('.emb__stage')!;
+    const area = scene.closest<HTMLElement>('section') ?? stage;
+
+    /** First query fires 1.4s after start, once the corpus has faded in. */
+    const START = 1400;
+    const SPIN = 0.07 / 1000; // rad per ms, about 90 s per turn
+
+    // Attribute writes, skipped when the value did not change (≤ 16 per frame).
+    const layer = (name: string) => svg.querySelector<SVGElement>(`[data-l="${name}"]`)!;
+    const q = svg.querySelector<SVGGElement>('.emb__q')!;
+    const qHalo = svg.querySelector<SVGCircleElement>('.emb__qhalo')!;
+    const qDot = svg.querySelector<SVGCircleElement>('.emb__query')!;
+    const retrieval = svg.querySelector<SVGGElement>('.emb__retrieval')!;
+    const paths = (['halos', 'linksFar', 'linksNear', 'far', 'mid', 'near', 'walk', 'fan', 'hits'] as const).map(
+      (k) => [k, layer(k)] as const,
+    );
+    const hitsUnder = layer('hitsUnder');
+    const walk = layer('walk');
+    const last = new WeakMap<Element, Record<string, string>>();
+    const put = (el: Element, attr: string, value: string) => {
+      let rec = last.get(el);
+      if (!rec) last.set(el, (rec = {}));
+      if (rec[attr] === value) return;
+      rec[attr] = value;
+      el.setAttribute(attr, value);
+    };
+
+    const draw = (fr: Frame) => {
+      for (const [k, el] of paths) put(el, 'd', fr[k]);
+      put(hitsUnder, 'd', fr.hits);
+      put(retrieval, 'opacity', fr.out.toFixed(2));
+      put(walk, 'opacity', (fr.walkOpacity * 0.85).toFixed(2));
+      put(q, 'transform', `translate(${Math.round(fr.qx * U)} ${Math.round(fr.qy * U)})`);
+      put(qDot, 'r', (6 * U * fr.qScale).toFixed(1));
+      put(qHalo, 'r', '' + Math.round((6 + 34 * (1 - Math.pow(1 - fr.halo, 3))) * U));
+      put(qHalo, 'opacity', ((1 - fr.halo) * 0.7).toFixed(2));
+    };
+
+    // View = rest pose + slow spin + drag offset + a little pointer parallax.
+    const view = { ...restView };
+    const target = { ...restView };
+    const pointer = { yaw: 0, pitch: 0 };
+    let offsetYaw = 0;
+    let basePitch = restView.pitch;
+    let dragging: { x: number; y: number; yaw: number; pitch: number } | null = null;
+    let clock = 0;
+    let lastNow = 0;
+    let frameNo = 0;
+    let visible = false;
+    let onScreen = false;
+    let raf = 0;
+
+    const pause = bindScenePause(scene, (paused) => {
+      // Stop exactly where it is (the view would otherwise ease toward its target).
+      if (paused) offsetYaw += view.yaw - target.yaw;
+      wake();
+    });
+    const still = () => reduce.matches || pause.paused;
+    const cycleTime = () => (reduce.matches ? STATIC_T : clock - START);
+
+    const tick = (now: number) => {
+      raf = 0;
+      const dt = lastNow ? Math.min(64, now - lastNow) : 0;
+      lastNow = now;
+      if (!still()) clock += dt;
+      if (!dragging) {
+        target.yaw = restView.yaw + (reduce.matches ? 0 : clock * SPIN) + offsetYaw + pointer.yaw;
+        target.pitch = basePitch + pointer.pitch;
+      }
+      view.yaw += (target.yaw - view.yaw) * 0.08;
+      view.pitch += (target.pitch - view.pitch) * 0.08;
+      // Touch devices: 30 fps is enough for this slow motion.
+      if (!coarse.matches || frameNo++ % 2 === 0) draw(frame(cycleTime(), view));
+      const settled = Math.abs(target.yaw - view.yaw) < 0.0005 && Math.abs(target.pitch - view.pitch) < 0.0005;
+      if (visible && (!still() || dragging || !settled)) raf = requestAnimationFrame(tick);
+      else lastNow = 0;
+    };
+
+    function wake() {
+      if (!raf && visible) raf = requestAnimationFrame(tick);
+    }
+
+    new IntersectionObserver(([entry]) => {
+      onScreen = entry.isIntersecting;
+      visible = onScreen && document.visibilityState === 'visible';
+      wake();
+    }).observe(fig);
+
+    document.addEventListener('visibilitychange', () => {
+      visible = onScreen && document.visibilityState === 'visible';
+      wake();
+    });
+    reduce.addEventListener('change', () => wake());
+
+    // Fine pointer: the scene leans a little toward the pointer.
+    area.addEventListener('pointermove', (ev) => {
+      if (dragging || !finePointer.matches || still()) return;
+      const r = area.getBoundingClientRect();
+      pointer.yaw = ((ev.clientX - r.left) / r.width - 0.5) * 0.5;
+      pointer.pitch = ((ev.clientY - r.top) / r.height - 0.5) * 0.3;
+      wake();
+    });
+    area.addEventListener('pointerleave', () => {
+      if (still()) return;
+      pointer.yaw = 0;
+      pointer.pitch = 0;
+      wake();
+    });
+
+    stage.addEventListener('pointermove', (ev) => {
+      if (!dragging) return;
+      target.yaw = dragging.yaw + (ev.clientX - dragging.x) * 0.008;
+      target.pitch = Math.min(0.9, Math.max(0.1, dragging.pitch + (ev.clientY - dragging.y) * 0.006));
+      wake();
+    });
+    stage.addEventListener('pointerdown', (ev) => {
+      dragging = { x: ev.clientX, y: ev.clientY, yaw: view.yaw, pitch: view.pitch };
+      stage.setPointerCapture(ev.pointerId);
+      stage.classList.add('is-dragging');
+      wake();
+    });
+    const endDrag = () => {
+      if (!dragging) return;
+      offsetYaw = target.yaw - restView.yaw - (reduce.matches ? 0 : clock * SPIN) - pointer.yaw;
+      basePitch = target.pitch - pointer.pitch;
+      dragging = null;
+      stage.classList.remove('is-dragging');
+      wake();
+    };
+    stage.addEventListener('pointerup', endDrag);
+    stage.addEventListener('pointercancel', endDrag);
+
+    // From here the script owns the retrieval layer (CSS hid it until now).
+    if (!reduce.matches) draw(frame(-1, view));
+    fig.dataset.live = '';
+    wake();
+  }
+</script>
+
+<style>
+  .emb {
+    margin: 0;
+  }
+
+  .emb__stage {
+    cursor: grab;
+    touch-action: pan-y;
+    user-select: none;
+    -webkit-user-select: none;
+  }
+
+  .emb__stage.is-dragging {
+    cursor: grabbing;
+  }
+
+  .emb__svg {
+    width: 100%;
+    height: auto;
+    overflow: visible;
+  }
+
+  .emb path {
+    fill: none;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+
+  .emb .emb__halos {
+    fill: color-mix(in srgb, var(--vein) 7%, transparent);
+    stroke: none;
+  }
+
+  .emb__links--far {
+    stroke: color-mix(in srgb, var(--vein) 25%, var(--plate));
+    stroke-width: 9;
+  }
+
+  .emb__links--near {
+    stroke: color-mix(in srgb, var(--vein) 45%, var(--plate));
+    stroke-width: 12;
+  }
+
+  .emb__docs--far {
+    stroke: color-mix(in srgb, var(--vein) 40%, var(--plate));
+    stroke-width: 45;
+    opacity: 0.55;
+  }
+
+  .emb__docs--mid {
+    stroke: color-mix(in srgb, var(--vein) 70%, var(--plate));
+    stroke-width: 65;
+    opacity: 0.8;
+  }
+
+  .emb__docs--near {
+    stroke: var(--vein);
+    stroke-width: 85;
+  }
+
+  .emb__walk {
+    stroke: var(--artery);
+    stroke-width: 20;
+  }
+
+  .emb__fan {
+    stroke: var(--artery);
+    stroke-width: 22;
+  }
+
+  .emb__hits-under {
+    stroke: var(--plate);
+    stroke-width: 130;
+  }
+
+  .emb__hits {
+    stroke: var(--artery);
+    stroke-width: 100;
+  }
+
+  .emb__query {
+    fill: var(--plate);
+    stroke: var(--artery);
+    stroke-width: 26;
+  }
+
+  .emb__qhalo {
+    fill: none;
+    stroke: var(--artery);
+    stroke-width: 15;
+  }
+
+  /* Dark theme: retrieval glows a little; the corpus stays flat. */
+  :global(:root[data-theme='dark']) .emb .emb__halos {
+    fill: color-mix(in srgb, var(--vein) 10%, transparent);
+  }
+
+  :global(:root[data-theme='dark']) .emb__retrieval {
+    filter: drop-shadow(0 0 4px color-mix(in srgb, var(--artery) 70%, transparent));
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :global(:root:not([data-theme='light'])) .emb .emb__halos {
+      fill: color-mix(in srgb, var(--vein) 10%, transparent);
+    }
+
+    :global(:root:not([data-theme='light'])) .emb__retrieval {
+      filter: drop-shadow(0 0 4px color-mix(in srgb, var(--artery) 70%, transparent));
+    }
+  }
+
+  figcaption {
+    margin-top: var(--space-xs);
+    max-width: 44ch;
+    padding-right: 3.5rem;
+    color: var(--graphite);
+    font-size: var(--step--1);
+    line-height: 1.5;
+  }
+
+  /*
+   * Entrance (with JavaScript and motion allowed), after the hero text:
+   * documents fade in far to near, the corpus settles from 96%, links follow,
+   * then the script fires the first query. The retrieval layer stays hidden
+   * until the script owns it, so the static frame never flashes.
+   */
+  @media (prefers-reduced-motion: no-preference) {
+    :global(:root.js) .emb:not([data-live]) .emb__retrieval {
+      opacity: 0;
+    }
+
+    :global(:root.js) .emb__corpus {
+      transform-box: fill-box;
+      transform-origin: center;
+      animation: emb-settle 1400ms var(--ease-out) 550ms both;
+    }
+
+    :global(:root.js) .emb__docs--far {
+      animation: emb-in 600ms var(--ease-out) 550ms both;
+    }
+
+    :global(:root.js) .emb__docs--mid {
+      animation: emb-in 600ms var(--ease-out) 670ms both;
+    }
+
+    :global(:root.js) .emb__docs--near {
+      animation: emb-in 600ms var(--ease-out) 790ms both;
+    }
+
+    :global(:root.js) .emb__halos,
+    :global(:root.js) .emb__links {
+      animation: emb-in 700ms ease-out 900ms both;
+    }
+
+    /* Caption and pause button arrive with the links, never before the scene. */
+    :global(:root.js) .emb figcaption,
+    :global(:root.js) .emb-scene :global(.scene-pause) {
+      animation: emb-in 600ms var(--ease-out) 1000ms both;
+    }
+  }
+
+  @keyframes emb-in {
+    from {
+      opacity: 0;
+    }
+  }
+
+  @keyframes emb-settle {
+    from {
+      transform: scale(0.96);
+    }
+  }
+</style>

@@ -1,0 +1,417 @@
+---
+import Base from '../layouts/Base.astro';
+import TalkRail from '../components/TalkRail.astro';
+import { type Lang, pick, t } from '../i18n/ui';
+import { talks } from '../data/talks';
+
+interface Props {
+  lang: Lang;
+}
+
+const { lang } = Astro.props;
+
+const copy = {
+  title: { en: 'Talks', it: 'Interventi' },
+  description: {
+    en: 'Selected talks, 2023–2026: MICCAI 2025 spotlight and Doctoral Consortium, an invited talk at Viz.ai, the PhD defence.',
+    it: 'Una selezione di interventi, 2023–2026: spotlight e Doctoral Consortium a MICCAI 2025, intervento su invito presso Viz.ai, discussione della tesi di dottorato.',
+  },
+  lead: {
+    en: 'Selected talks from my PhD years. Every deck is public.',
+    it: 'Una selezione di interventi degli anni del dottorato. Tutte le slide sono pubbliche.',
+  },
+};
+---
+
+<Base lang={lang} title={pick(copy.title, lang)} description={pick(copy.description, lang)}>
+  <header class="wrap page-head">
+    <h1>{pick(copy.title, lang)}</h1>
+    <p>{pick(copy.lead, lang)}</p>
+  </header>
+
+  <div class="wrap">
+    <TalkRail talks={talks} lang={lang} variant="grid" preview level={2} />
+  </div>
+
+  <dialog class="deck-dialog" aria-labelledby="deck-title" data-deck-dialog>
+    <div class="deck-dialog__inner">
+      <div class="deck-dialog__top">
+        <h2 id="deck-title" class="deck-dialog__title" data-title></h2>
+        <button type="button" class="deck-dialog__close" data-close>
+          <svg viewBox="0 0 16 16" aria-hidden="true">
+            <path d="m4 4 8 8M12 4l-8 8" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" />
+          </svg>
+          {t(lang, 'nav.close')}
+        </button>
+      </div>
+      <div class="deck-dialog__stage" data-stage>
+        <img class="deck-dialog__poster" alt="" data-poster width="1200" height="675" />
+        <div class="deck-dialog__status" role="status" data-status></div>
+      </div>
+      <div class="deck-dialog__actions">
+        <a class="button button--primary" href="#" target="_blank" rel="noopener" data-open>
+          {t(lang, 'slides.openGoogle')}
+          <span class="visually-hidden"> {t(lang, 'external')}</span>
+        </a>
+        <div class="deck-dialog__load">
+          <p id="deck-notice" class="deck-dialog__notice">{t(lang, 'slides.notice')}</p>
+          <button type="button" class="button" aria-describedby="deck-notice" data-load>
+            {t(lang, 'slides.load')}
+          </button>
+        </div>
+      </div>
+    </div>
+    <template data-loading>
+      <span class="deck-dialog__bar" aria-hidden="true"></span>
+      <span>{t(lang, 'slides.loading')}</span>
+    </template>
+    <template data-slow>
+      <span>{t(lang, 'slides.slow')}</span>
+      <a href="#" target="_blank" rel="noopener" data-slow-link>
+        {t(lang, 'slides.openGoogle')}
+        <span class="visually-hidden"> {t(lang, 'external')}</span>
+      </a>
+    </template>
+  </dialog>
+</Base>
+
+<script>
+  // Preview dialog. Opening it shows a local poster only; Google is contacted
+  // only after "Load slides from Google". If the embed has not loaded after
+  // 8 s, a message offers the Google Slides link instead (it keeps loading).
+  const dialog = document.querySelector<HTMLDialogElement>('[data-deck-dialog]');
+  if (dialog) {
+    const reduce = window.matchMedia('(prefers-reduced-motion: reduce)');
+    const q = <T extends Element>(sel: string) => dialog.querySelector<T>(sel)!;
+    const titleEl = q<HTMLElement>('[data-title]');
+    const stage = q<HTMLElement>('[data-stage]');
+    const poster = q<HTMLImageElement>('[data-poster]');
+    const status = q<HTMLElement>('[data-status]');
+    const openLink = q<HTMLAnchorElement>('[data-open]');
+    const loadBtn = q<HTMLButtonElement>('[data-load]');
+    const loadBox = q<HTMLElement>('.deck-dialog__load');
+    const tplLoading = q<HTMLTemplateElement>('template[data-loading]');
+    const tplSlow = q<HTMLTemplateElement>('template[data-slow]');
+    let trigger: HTMLButtonElement | null = null;
+    let embed = '';
+    let timer = 0;
+
+    const reset = () => {
+      clearTimeout(timer);
+      stage.querySelector('iframe')?.remove();
+      poster.hidden = false;
+      status.replaceChildren();
+      status.hidden = true;
+      loadBox.hidden = false;
+      loadBtn.removeAttribute('aria-disabled');
+    };
+
+    const open = async (btn: HTMLButtonElement) => {
+      trigger = btn;
+      reset();
+      embed = btn.dataset.embed!;
+      titleEl.textContent = btn.dataset.title!;
+      openLink.href = btn.dataset.pub!;
+      poster.src = btn.dataset.poster || '';
+      poster.hidden = !btn.dataset.poster;
+      const plate = btn.closest('.talk')?.querySelector<HTMLElement>('.talk__plate');
+      const canMorph = 'startViewTransition' in document && !reduce.matches && plate && btn.dataset.poster;
+      if (!canMorph) {
+        dialog.showModal();
+        return;
+      }
+      // The cover morphs into the poster (shared view-transition-name).
+      try {
+        await Promise.race([poster.decode(), new Promise((r) => setTimeout(r, 300))]);
+      } catch (_) {}
+      plate.style.viewTransitionName = 'talk-cover';
+      dialog.classList.add('is-morphing');
+      const vt = document.startViewTransition(() => {
+        plate.style.viewTransitionName = '';
+        poster.style.viewTransitionName = 'talk-cover';
+        dialog.showModal();
+      });
+      vt.finished.finally(() => {
+        poster.style.viewTransitionName = '';
+        dialog.classList.remove('is-morphing');
+      });
+    };
+
+    const close = () => {
+      reset();
+      if (dialog.open) dialog.close();
+    };
+
+    document.querySelectorAll<HTMLButtonElement>('[data-preview]').forEach((btn) =>
+      btn.addEventListener('click', () => open(btn)),
+    );
+    q<HTMLButtonElement>('[data-close]').addEventListener('click', close);
+    // Click on the backdrop (outside the panel) closes.
+    dialog.addEventListener('click', (e) => {
+      if (e.target === dialog) close();
+    });
+    // Esc closes natively; clean up and return focus in every case.
+    dialog.addEventListener('close', () => {
+      reset();
+      trigger?.focus();
+    });
+
+    loadBtn.addEventListener('click', () => {
+      if (loadBtn.getAttribute('aria-disabled') === 'true' || !embed) return;
+      loadBtn.setAttribute('aria-disabled', 'true');
+      status.replaceChildren(tplLoading.content.cloneNode(true));
+      status.hidden = false;
+      const frame = document.createElement('iframe');
+      frame.src = embed;
+      frame.title = titleEl.textContent ?? '';
+      frame.allowFullscreen = true;
+      frame.referrerPolicy = 'no-referrer';
+      frame.className = 'deck-dialog__iframe';
+      frame.addEventListener('load', () => {
+        clearTimeout(timer);
+        status.replaceChildren();
+        status.hidden = true;
+        poster.hidden = true;
+        loadBox.hidden = true;
+        frame.classList.add('is-loaded');
+        dialog.querySelector<HTMLElement>('.deck-dialog__close')?.focus();
+      });
+      stage.append(frame);
+      timer = window.setTimeout(() => {
+        const slow = tplSlow.content.cloneNode(true) as DocumentFragment;
+        slow.querySelector<HTMLAnchorElement>('[data-slow-link]')!.href = openLink.href;
+        status.replaceChildren(slow);
+      }, 8000);
+    });
+  }
+</script>
+
+<style>
+  .deck-dialog {
+    width: min(64rem, calc(100vw - 2 * var(--gutter)));
+    max-width: none;
+    max-height: calc(100dvh - 2rem);
+    margin: auto;
+    padding: 0;
+    border: 1px solid var(--rule);
+    border-radius: calc(var(--radius) + 4px);
+    background: var(--plate);
+    color: var(--ink);
+    box-shadow: 0 30px 80px -30px rgb(0 0 0 / 0.5);
+    overflow: auto;
+  }
+
+  .deck-dialog::backdrop {
+    background: rgb(11 15 23 / 0.62);
+    backdrop-filter: blur(3px);
+  }
+
+  .deck-dialog__inner {
+    display: grid;
+    gap: var(--space-m);
+    padding: var(--space-m) var(--space-l) var(--space-l);
+  }
+
+  .deck-dialog__top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-m);
+  }
+
+  .deck-dialog__title {
+    font-size: var(--step-2);
+  }
+
+  .deck-dialog__close {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    flex: none;
+    min-height: 44px;
+    padding: 0 1rem;
+    border: 1px solid var(--rule);
+    border-radius: 999px;
+    background: var(--surface);
+    color: var(--ink);
+    font-weight: 600;
+    font-size: var(--step--1);
+    cursor: pointer;
+  }
+
+  .deck-dialog__close svg {
+    width: 14px;
+    height: 14px;
+  }
+
+  @media (hover: hover) {
+    .deck-dialog__close:hover {
+      border-color: var(--ink);
+    }
+  }
+
+  .deck-dialog__stage {
+    position: relative;
+    aspect-ratio: 16 / 9;
+    overflow: hidden;
+    border: 1px solid var(--rule);
+    border-radius: var(--radius);
+    background: var(--surface);
+  }
+
+  .deck-dialog__poster {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+  }
+
+  .deck-dialog__poster[hidden] {
+    display: none;
+  }
+
+  .deck-dialog__stage :global(.deck-dialog__iframe) {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    border: 0;
+    opacity: 0;
+    transition: opacity 200ms ease-out;
+  }
+
+  .deck-dialog__stage :global(.deck-dialog__iframe.is-loaded) {
+    opacity: 1;
+  }
+
+  .deck-dialog__status {
+    position: absolute;
+    inset: auto 0 0 0;
+    display: grid;
+    gap: var(--space-2xs);
+    padding: var(--space-s) var(--space-m);
+    background: color-mix(in srgb, var(--plate) 92%, transparent);
+    font-size: var(--step--1);
+    font-weight: 600;
+  }
+
+  .deck-dialog__status[hidden] {
+    display: none;
+  }
+
+  .deck-dialog__status :global(a) {
+    justify-self: start;
+    display: inline-flex;
+    align-items: center;
+    min-height: 44px;
+  }
+
+  /* Indeterminate progress line (transform only; static with reduced motion). */
+  .deck-dialog__status :global(.deck-dialog__bar) {
+    position: absolute;
+    inset: 0 0 auto 0;
+    height: 2px;
+    overflow: hidden;
+    background: color-mix(in srgb, var(--artery) 20%, transparent);
+  }
+
+  .deck-dialog__status :global(.deck-dialog__bar)::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    width: 35%;
+    background: var(--artery);
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    .deck-dialog__status :global(.deck-dialog__bar)::after {
+      animation: bar 1.2s cubic-bezier(0.65, 0, 0.35, 1) infinite;
+    }
+  }
+
+  @keyframes bar {
+    from {
+      transform: translateX(-100%);
+    }
+    to {
+      transform: translateX(290%);
+    }
+  }
+
+  .deck-dialog__actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: var(--space-m) var(--space-l);
+  }
+
+  .deck-dialog__load {
+    display: grid;
+    gap: var(--space-xs);
+    justify-items: start;
+    max-width: 34rem;
+  }
+
+  .deck-dialog__load[hidden] {
+    display: none;
+  }
+
+  .deck-dialog__notice {
+    color: var(--graphite);
+    font-size: var(--step--1);
+    line-height: 1.5;
+  }
+
+  .deck-dialog [aria-disabled='true'] {
+    opacity: 0.6;
+    cursor: progress;
+  }
+
+  /* Fallback entrance (no View Transitions): fade and scale in. */
+  @media (prefers-reduced-motion: no-preference) {
+    .deck-dialog {
+      transition:
+        opacity 200ms ease-out,
+        transform 200ms var(--ease-out),
+        overlay 200ms allow-discrete,
+        display 200ms allow-discrete;
+    }
+
+    .deck-dialog::backdrop {
+      transition:
+        opacity 200ms ease-out,
+        overlay 200ms allow-discrete,
+        display 200ms allow-discrete;
+    }
+
+    @starting-style {
+      .deck-dialog[open] {
+        opacity: 0;
+        transform: scale(0.96);
+      }
+
+      .deck-dialog[open]::backdrop {
+        opacity: 0;
+      }
+    }
+
+    .deck-dialog.is-morphing {
+      transition: none;
+    }
+
+    :global(::view-transition-group(talk-cover)) {
+      animation-duration: 320ms;
+      animation-timing-function: cubic-bezier(0.16, 1, 0.3, 1);
+    }
+  }
+
+  @media (max-width: 40rem) {
+    .deck-dialog__inner {
+      padding: var(--space-s) var(--space-m) var(--space-m);
+    }
+
+    .deck-dialog__top {
+      align-items: flex-start;
+    }
+  }
+</style>

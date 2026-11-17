@@ -1,0 +1,444 @@
+---
+import Base from '../layouts/Base.astro';
+import Logo from '../components/Logo.astro';
+import Icon from '../components/Icon.astro';
+import TechLogo from '../components/TechLogo.astro';
+import VesselStop from '../components/VesselStop.astro';
+import { type Lang, asset, enIfSame, pick, t } from '../i18n/ui';
+import { allStops, awards, vessel } from '../data/career';
+import { person, skills } from '../data/profile';
+
+interface Props {
+  lang: Lang;
+}
+
+const { lang } = Astro.props;
+
+const copy = {
+  title: { en: 'Experience', it: 'Esperienza' },
+  description: {
+    en: 'AI Decision Science Consultant at Accenture since 2026. Before that: PhD at Sorbonne Université & EURECOM, AI internship at SAP Labs.',
+    it: 'AI Decision Science Consultant in Accenture dal 2026. Prima: dottorato alla Sorbonne Université e a EURECOM, stage AI in SAP Labs.',
+  },
+  lead: {
+    en: 'Enterprise AI at Accenture, after a PhD in deep learning. The CV is in English and Italian.',
+    it: 'AI enterprise in Accenture, dopo un dottorato in deep learning. Il CV è in inglese e in italiano.',
+  },
+  vessel: { en: 'Work and education', it: 'Lavoro e formazione' },
+  work: { en: 'Work', it: 'Lavoro' },
+  education: { en: 'Education', it: 'Formazione' },
+  skills: { en: 'Skills', it: 'Competenze' },
+  awards: { en: 'Recognition', it: 'Riconoscimenti' },
+};
+
+const marks = allStops();
+---
+
+<Base lang={lang} title={pick(copy.title, lang)} description={pick(copy.description, lang)}>
+  <header class="wrap page-head">
+    <h1>{pick(copy.title, lang)}</h1>
+    <p>{pick(copy.lead, lang)}</p>
+    <div class="actions head-actions">
+      <a class="button button--primary" href={asset(person.cv)} download>
+        <Icon name="download" class="icon" />
+        {t(lang, 'cta.cv')}
+      </a>
+      <a class="button" href={person.links.linkedin} rel="me noopener">
+        <Icon name="linkedin" class="icon" />
+        LinkedIn
+      </a>
+    </div>
+  </header>
+
+  <section class="section" aria-labelledby="vessel-title">
+    <div class="wrap vessel-wrap">
+      <div class="vessel-main">
+        <h2 id="vessel-title">{pick(copy.vessel, lang)}</h2>
+        <p class="legend">
+          <span class="legend__item legend__item--work">{pick(copy.work, lang)}</span>
+          <span class="legend__item legend__item--edu">{pick(copy.education, lang)}</span>
+        </p>
+        <ol class="vessel" role="list">
+          {vessel.map((stop) => <VesselStop stop={stop} lang={lang} />)}
+        </ol>
+      </div>
+      <aside class="vessel-mark" aria-hidden="true">
+        <div class="vessel-mark__inner">
+          {
+            marks.map((m, i) => (
+              <div class:list={['mark', { 'is-current': i === 0 }]} data-mark={m.id}>
+                <div class="mark__logos">
+                  {m.logos?.map((l) => (
+                    <Logo name={l} height={m.logos!.length > 1 ? 3.2 : 4.5} />
+                  ))}
+                </div>
+                <p class="mark__when num">{pick(m.when, lang)}</p>
+              </div>
+            ))
+          }
+        </div>
+      </aside>
+    </div>
+  </section>
+
+  <section class="section" aria-labelledby="skills-title">
+    <div class="wrap">
+      <h2 id="skills-title" class="section-title">{pick(copy.skills, lang)}</h2>
+      <dl class="skills">
+        {
+          skills.map((g, gi) => (
+            <div class:list={['skills__group', { 'skills__group--lead': gi === 0 }]}>
+              <dt>{pick(g.group, lang)}</dt>
+              <dd>
+                <ul class="tech-chips reveal-kids" data-reveal role="list">
+                  {g.items.map((it, i) => (
+                    <li class="tech-chip" style={`--i:${i}`}>
+                      {it.logo && <TechLogo name={it.logo} height={1} />}
+                      {pick(it.name, lang)}
+                    </li>
+                  ))}
+                </ul>
+              </dd>
+            </div>
+          ))
+        }
+      </dl>
+    </div>
+  </section>
+
+  <section class="section" aria-labelledby="awards-title">
+    <div class="wrap">
+      <h2 id="awards-title" class="section-title">{pick(copy.awards, lang)}</h2>
+      <ol class="awards reveal-kids" data-reveal role="list">
+        {
+          awards.map((a, i) => (
+            <li style={`--i:${i}`}>
+              <span class="awards__when num">{a.when}</span>
+              <span class="awards__text">
+                <span class="awards__title" lang={enIfSame(a.title, lang)}>{pick(a.title, lang)}</span>
+                <span class="awards__detail" lang={enIfSame(a.detail, lang)}>{pick(a.detail, lang)}</span>
+              </span>
+            </li>
+          ))
+        }
+      </ol>
+    </div>
+  </section>
+</Base>
+
+<script>
+  // Sticky organisation mark (wide screens): shows the logo and years of the
+  // stop crossing the middle of the viewport.
+  const marks = new Map(
+    [...document.querySelectorAll<HTMLElement>('[data-mark]')].map((el) => [el.dataset.mark!, el] as const),
+  );
+  const aside = document.querySelector<HTMLElement>('.vessel-mark');
+  if (aside && marks.size && 'IntersectionObserver' in window) {
+    let current = [...marks.keys()][0];
+    const show = (id: string) => {
+      if (id === current) return;
+      marks.get(current)?.classList.remove('is-current');
+      marks.get(id)?.classList.add('is-current');
+      current = id;
+    };
+    const io = new IntersectionObserver(
+      (entries) => {
+        for (const e of entries) if (e.isIntersecting) show((e.target as HTMLElement).dataset.stop!);
+      },
+      { rootMargin: '-45% 0px -45% 0px' },
+    );
+    document.querySelectorAll<HTMLElement>('.stop__row[data-stop]').forEach((row) => io.observe(row));
+  }
+</script>
+
+<style>
+  .head-actions {
+    margin-top: var(--space-l);
+  }
+
+  /* Vessel + sticky mark */
+  .vessel-wrap {
+    display: grid;
+    grid-template-columns: minmax(0, 44rem) minmax(0, 1fr);
+    gap: var(--space-xl);
+  }
+
+  .legend {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2xs) var(--space-l);
+    margin-top: var(--space-s);
+    margin-bottom: var(--space-m);
+    color: var(--graphite);
+    font-size: var(--step--1);
+  }
+
+  .legend__item {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .legend__item::before {
+    content: '';
+    width: 0.8rem;
+    height: 0.8rem;
+    border-radius: 50%;
+    border: 3px solid var(--artery);
+    background: var(--plate);
+  }
+
+  .legend__item--edu::before {
+    border-color: var(--vein);
+  }
+
+  /*
+   * The trunk: a grey vessel that fills with red as you scroll (scroll-driven,
+   * progressive enhancement). It runs from the first node to the root node;
+   * the root row hides the part below its node.
+   */
+  .vessel {
+    --when-w: 5.5rem;
+    --node-w: 1.2rem;
+    --col-gap: var(--space-m);
+    --bx: 48px;
+    --by: 40px;
+    --rail: calc(var(--when-w) + var(--col-gap) + var(--node-w) / 2);
+    --node-top: calc(var(--space-m) + 0.25rem + 0.5rem);
+    position: relative;
+    list-style: none;
+    padding: 0;
+  }
+
+  .vessel::before,
+  .vessel::after {
+    content: '';
+    position: absolute;
+    top: var(--node-top);
+    bottom: 0;
+    left: calc(var(--rail) - 1.5px);
+    width: 3px;
+    border-radius: 3px;
+    background: var(--rule);
+  }
+
+  .vessel::after {
+    background: var(--artery);
+    transform-origin: top;
+  }
+
+  @supports (animation-timeline: view()) {
+    @media (prefers-reduced-motion: no-preference) {
+      .vessel::after {
+        animation: fill-vessel linear both;
+        animation-timeline: view();
+        animation-range: cover 10% cover 70%;
+      }
+    }
+  }
+
+  @keyframes fill-vessel {
+    from {
+      transform: scaleY(0);
+    }
+  }
+
+  .vessel-mark {
+    position: relative;
+  }
+
+  .vessel-mark__inner {
+    position: sticky;
+    top: 30vh;
+    height: 16rem;
+  }
+
+  .mark {
+    position: absolute;
+    inset: 0;
+    display: grid;
+    align-content: start;
+    gap: var(--space-m);
+    color: color-mix(in srgb, var(--graphite) 45%, transparent);
+    opacity: 0;
+    transform: translateY(12px);
+    transition:
+      opacity 200ms ease-in,
+      transform 200ms ease-in;
+  }
+
+  .mark.is-current {
+    opacity: 1;
+    transform: none;
+    transition:
+      opacity 420ms var(--ease-out),
+      transform 420ms var(--ease-out);
+  }
+
+  .mark__logos {
+    display: grid;
+    justify-items: start;
+    gap: var(--space-m);
+  }
+
+  .mark__when {
+    font-family: var(--font-serif);
+    font-size: var(--step-2);
+    color: var(--graphite);
+  }
+
+  :global(:root:not(.js)) .vessel-mark {
+    display: none;
+  }
+
+  @media (max-width: 63.99rem) {
+    .vessel-wrap {
+      grid-template-columns: minmax(0, 1fr);
+    }
+
+    .vessel-mark {
+      display: none;
+    }
+  }
+
+  @media (max-width: 40rem) {
+    .vessel {
+      --when-w: 0rem;
+      --col-gap: var(--space-s);
+      --bx: 28px;
+      --by: 34px;
+      --rail: calc(var(--node-w) / 2);
+    }
+  }
+
+  /* Skills: chip rows with tool logos */
+  .skills {
+    display: grid;
+  }
+
+  .skills__group {
+    display: grid;
+    grid-template-columns: 14rem 1fr;
+    gap: var(--space-m);
+    padding-block: var(--space-m);
+    border-top: 1px solid var(--rule);
+  }
+
+  .skills__group:last-child {
+    border-bottom: 1px solid var(--rule);
+  }
+
+  .skills dt {
+    font-weight: 650;
+    padding-top: 0.2rem;
+  }
+
+  .skills dd {
+    margin: 0;
+  }
+
+  .tech-chips {
+    --stagger: 22ms;
+    list-style: none;
+    padding: 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.45rem;
+  }
+
+  .tech-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    min-height: 30px;
+    padding: 0.1rem 0.75rem;
+    border: 1px solid var(--rule);
+    border-radius: 999px;
+    background: var(--surface);
+    color: var(--ink);
+    font-size: var(--step--1);
+    line-height: 1.3;
+  }
+
+  .skills__group--lead .tech-chip {
+    background: var(--ink);
+    border-color: var(--ink);
+    color: var(--plate);
+  }
+
+  /* Awards: one line each, two columns on wide screens */
+  /* Two balanced columns on wide screens (no blank band beside a long item). */
+  .awards {
+    --stagger: 60ms;
+    list-style: none;
+    padding: 0;
+    columns: 2;
+    column-gap: var(--space-xl);
+    border-bottom: 1px solid var(--rule);
+  }
+
+  .awards li {
+    display: grid;
+    grid-template-columns: 0.5rem 6.5rem minmax(0, 1fr);
+    gap: var(--space-s);
+    align-items: baseline;
+    min-height: 44px;
+    padding-block: 0.65rem;
+    border-top: 1px solid var(--rule);
+    break-inside: avoid;
+  }
+
+  .awards li::before {
+    content: '';
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--artery);
+    align-self: start;
+    margin-top: 0.55rem;
+  }
+
+  .awards__when {
+    color: var(--graphite);
+    font-size: var(--step--1);
+  }
+
+  .awards__title {
+    font-weight: 650;
+  }
+
+  .awards__detail {
+    color: var(--graphite);
+  }
+
+  .awards__detail::before {
+    content: ' · ';
+  }
+
+  @media (max-width: 60rem) {
+    .awards {
+      columns: 1;
+    }
+  }
+
+  @media (max-width: 48rem) {
+    .skills__group {
+      grid-template-columns: 1fr;
+      gap: var(--space-s);
+    }
+  }
+
+  @media (max-width: 40rem) {
+    .awards li {
+      grid-template-columns: 0.5rem minmax(0, 1fr);
+    }
+
+    .awards__when {
+      grid-column: 2;
+    }
+
+    .awards__text {
+      grid-column: 2;
+    }
+  }
+</style>

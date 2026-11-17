@@ -1,0 +1,122 @@
+---
+import { type Lang, type UIKey, route, t } from '../i18n/ui';
+import { person } from '../data/profile';
+
+interface Props {
+  lang: Lang;
+}
+
+const { lang } = Astro.props;
+const year = new Date().getFullYear();
+
+// Talks is not in the main nav: it is reached from here and from Research.
+const pages: { key: string; label: UIKey }[] = [
+  { key: 'experience', label: 'nav.experience' },
+  { key: 'research', label: 'nav.research' },
+  { key: 'talks', label: 'nav.talks' },
+];
+---
+
+<footer class="site-footer">
+  <div class="wrap site-footer__inner">
+    <div>
+      <p class="site-footer__name">{person.name}</p>
+      <p class="muted">{t(lang, 'footer.personal')}</p>
+    </div>
+    <nav class="site-footer__nav" aria-label={t(lang, 'footer.nav')}>
+      <ul>
+        {
+          pages.map((p) => (
+            <li>
+              <a href={route(lang, p.key)}>{t(lang, p.label)}</a>
+            </li>
+          ))
+        }
+      </ul>
+    </nav>
+    <ul class="site-footer__links">
+      <li><a href={`mailto:${person.email}`}>{person.email}</a></li>
+      <li><a href={person.links.linkedin} rel="me noopener">LinkedIn</a></li>
+      <li><a href={person.links.github} rel="me noopener">GitHub</a></li>
+      <li><a href={person.links.scholar} rel="me noopener">Google Scholar</a></li>
+      <li><a href={person.links.orcid} rel="me noopener">ORCID</a></li>
+    </ul>
+    <div class="site-footer__legal">
+      <p class="num">© {year} {person.name}</p>
+      <p>{t(lang, 'footer.noTracking')} <a href={route(lang, 'privacy')}>{t(lang, 'footer.privacy')}</a></p>
+    </div>
+  </div>
+</footer>
+
+<style>
+  .site-footer {
+    margin-top: var(--space-2xl);
+    border-top: 1px solid var(--rule);
+    padding-block: var(--space-xl) calc(var(--space-xl) + env(safe-area-inset-bottom));
+    font-size: var(--step--1);
+  }
+
+  .site-footer__inner {
+    display: grid;
+    grid-template-columns: 1.4fr 0.7fr 1fr 1fr;
+    gap: var(--space-l);
+    align-items: start;
+  }
+
+  .site-footer__name {
+    font-family: var(--font-serif);
+    font-weight: 650;
+    font-size: var(--step-1);
+    margin-bottom: var(--space-2xs);
+  }
+
+  .site-footer__inner .muted {
+    max-width: 40ch;
+  }
+
+  .site-footer__nav ul,
+  .site-footer__links {
+    list-style: none;
+    padding: 0;
+    display: grid;
+    gap: var(--space-2xs);
+  }
+
+  .site-footer__nav a {
+    font-weight: 600;
+  }
+
+  .site-footer__links a {
+    overflow-wrap: anywhere;
+  }
+
+  .site-footer__legal {
+    color: var(--graphite);
+    display: grid;
+    gap: var(--space-2xs);
+  }
+
+  @media (max-width: 60rem) {
+    .site-footer__inner {
+      grid-template-columns: 1fr 1fr;
+    }
+  }
+
+  @media (max-width: 40rem) {
+    .site-footer__inner {
+      grid-template-columns: 1fr;
+      gap: var(--space-m);
+    }
+
+    .site-footer__nav ul,
+    .site-footer__links {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0 var(--space-m);
+    }
+
+    .site-footer__links li:first-child {
+      flex-basis: 100%;
+    }
+  }
+</style>

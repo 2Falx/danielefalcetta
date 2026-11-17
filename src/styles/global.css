@@ -1,0 +1,764 @@
+/*
+ * Design tokens and base styles. See DESIGN.md for the rationale.
+ * World: anatomical plate / scientific figure. Ink = venous blue, accent = arterial red.
+ */
+
+:root {
+  color-scheme: light;
+
+  /* Palette, light */
+  --plate: #f5f6f8;
+  --surface: #ffffff;
+  --ink: #13213c;
+  --graphite: #4a5467;
+  --rule: #d6dbe3;
+  --artery: #b42318;
+  --artery-wash: #f7e4e1;
+  --vein: #24539e;
+  --selection: #dbe6f7;
+
+  /* Type */
+  --font-serif: 'Source Serif 4 Variable', 'Source Serif Pro', Georgia, serif;
+  --font-sans: 'Source Sans 3 Variable', 'Source Sans Pro', 'Segoe UI', system-ui, sans-serif;
+  --step--1: 0.875rem;
+  --step-0: 1.0625rem;
+  --step-1: 1.25rem;
+  --step-2: clamp(1.4rem, 1.25rem + 0.6vw, 1.65rem);
+  --step-3: clamp(1.85rem, 1.45rem + 1.7vw, 2.6rem);
+  --step-4: clamp(2.5rem, 1.6rem + 3.9vw, 4.6rem);
+
+  /* Space */
+  --space-2xs: 0.25rem;
+  --space-xs: 0.5rem;
+  --space-s: 0.75rem;
+  --space-m: 1.25rem;
+  --space-l: 2rem;
+  --space-xl: clamp(2.75rem, 2rem + 3vw, 4.5rem);
+  --space-2xl: clamp(4rem, 3rem + 5vw, 7.5rem);
+
+  --measure: 68ch;
+  --page: 74rem;
+  --gutter: clamp(1.25rem, 0.5rem + 3.5vw, 3rem);
+  --radius: 12px;
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+:root[data-theme='dark'] {
+  color-scheme: dark;
+  --plate: #0b0f17;
+  --surface: #121927;
+  --ink: #e8ecf3;
+  --graphite: #a7b0c0;
+  --rule: #2a3245;
+  --artery: #ff7b6c;
+  --artery-wash: #3a1d1d;
+  --vein: #94b8f4;
+  --selection: #233a63;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme='light']) {
+    color-scheme: dark;
+    --plate: #0b0f17;
+    --surface: #121927;
+    --ink: #e8ecf3;
+    --graphite: #a7b0c0;
+    --rule: #2a3245;
+    --artery: #ff7b6c;
+    --artery-wash: #3a1d1d;
+    --vein: #94b8f4;
+    --selection: #233a63;
+  }
+}
+
+/* Reset */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+* {
+  margin: 0;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+  scroll-padding-top: 5rem;
+  /* Lets <details> animate to height:auto (Chromium); instant elsewhere. */
+  interpolate-size: allow-keywords;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  html {
+    scroll-behavior: smooth;
+  }
+}
+
+body {
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  background: var(--plate);
+  color: var(--ink);
+  font-family: var(--font-sans);
+  font-size: var(--step-0);
+  line-height: 1.6;
+  font-optical-sizing: auto;
+  -webkit-font-smoothing: antialiased;
+  -webkit-tap-highlight-color: transparent;
+}
+
+main {
+  flex: 1;
+  /* Entrance animations that slide in from the side must never cause a
+     horizontal scroll on phones. clip (not hidden) keeps position: sticky working. */
+  overflow-x: clip;
+}
+
+img,
+svg,
+video,
+iframe {
+  display: block;
+  max-width: 100%;
+}
+
+img {
+  height: auto;
+}
+
+button,
+input,
+select,
+textarea {
+  font: inherit;
+  color: inherit;
+}
+
+::selection {
+  background: var(--selection);
+  color: var(--ink);
+}
+
+:focus-visible {
+  outline: 2px solid var(--vein);
+  outline-offset: 3px;
+  border-radius: 3px;
+}
+
+/* Typography */
+h1,
+h2,
+h3,
+h4 {
+  font-family: var(--font-serif);
+  font-weight: 600;
+  line-height: 1.15;
+  letter-spacing: -0.015em;
+  text-wrap: balance;
+  color: var(--ink);
+}
+
+h1 {
+  font-size: var(--step-4);
+  letter-spacing: -0.025em;
+  line-height: 1.02;
+}
+
+h2 {
+  font-size: var(--step-3);
+}
+
+h3 {
+  font-size: var(--step-1);
+  line-height: 1.3;
+}
+
+p,
+li {
+  text-wrap: pretty;
+}
+
+a {
+  color: inherit;
+  text-decoration-line: underline;
+  text-decoration-color: color-mix(in srgb, var(--vein) 45%, transparent);
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.2em;
+  transition: text-decoration-color 160ms ease, color 160ms ease;
+}
+
+@media (hover: hover) {
+  a:hover {
+    text-decoration-color: var(--artery);
+    text-decoration-thickness: 2px;
+  }
+}
+
+strong {
+  font-weight: 650;
+}
+
+.num {
+  font-variant-numeric: tabular-nums lining-nums;
+}
+
+/* Layout helpers */
+.wrap {
+  width: 100%;
+  max-width: var(--page);
+  margin-inline: auto;
+  padding-inline: var(--gutter);
+}
+
+.prose {
+  max-width: var(--measure);
+}
+
+.prose > * + * {
+  margin-top: var(--space-m);
+}
+
+.prose h2 {
+  margin-top: var(--space-xl);
+  font-size: var(--step-2);
+}
+
+.prose ul {
+  padding-left: 1.2em;
+}
+
+.prose li + li {
+  margin-top: var(--space-xs);
+}
+
+.muted {
+  color: var(--graphite);
+}
+
+.visually-hidden {
+  position: absolute !important;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+.skip-link {
+  position: absolute;
+  left: var(--space-m);
+  top: -100%;
+  z-index: 100;
+  padding: var(--space-xs) var(--space-m);
+  background: var(--ink);
+  color: var(--plate);
+  border-radius: 6px;
+  text-decoration: none;
+}
+
+.skip-link:focus {
+  top: var(--space-m);
+}
+
+/* Page sections */
+.page-head {
+  padding-block: var(--space-xl) var(--space-l);
+}
+
+.page-head h1 {
+  font-size: var(--step-3);
+  letter-spacing: -0.02em;
+}
+
+.page-head p {
+  margin-top: var(--space-m);
+  max-width: var(--measure);
+  color: var(--graphite);
+  font-size: var(--step-1);
+  line-height: 1.5;
+}
+
+.section {
+  padding-block: var(--space-xl);
+  border-top: 1px solid var(--rule);
+}
+
+.section > .wrap > h2,
+.section-title {
+  margin-bottom: var(--space-l);
+}
+
+/* Buttons and link rows */
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-s);
+}
+
+.button {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5em;
+  min-height: 2.75rem;
+  padding: 0.55rem 1.1rem;
+  border-radius: 999px;
+  border: 1px solid var(--rule);
+  background: var(--surface);
+  color: var(--ink);
+  font-weight: 600;
+  font-size: var(--step--1);
+  letter-spacing: 0.005em;
+  text-decoration: none;
+  cursor: pointer;
+  user-select: none;
+  transition:
+    border-color 160ms ease,
+    background-color 160ms ease,
+    transform 160ms var(--ease-out);
+}
+
+.button svg {
+  width: 1.05em;
+  height: 1.05em;
+  flex: none;
+}
+
+.button--primary {
+  background: var(--ink);
+  border-color: var(--ink);
+  color: var(--plate);
+}
+
+@media (hover: hover) {
+  .button:hover {
+    border-color: var(--ink);
+  }
+
+  .button--primary:hover {
+    background: color-mix(in srgb, var(--ink) 88%, var(--artery));
+  }
+}
+
+.button:active {
+  transform: scale(0.97);
+}
+
+/* Lists with a year column, used by publications, talks, experience */
+.entries {
+  list-style: none;
+  padding: 0;
+}
+
+.entry {
+  display: grid;
+  grid-template-columns: 5.5rem 1fr;
+  gap: var(--space-2xs) var(--space-m);
+  padding-block: var(--space-m);
+  border-top: 1px solid var(--rule);
+}
+
+.entry:last-child {
+  border-bottom: 1px solid var(--rule);
+}
+
+.entry__when {
+  color: var(--graphite);
+  font-size: var(--step--1);
+  font-variant-numeric: tabular-nums lining-nums;
+  padding-top: 0.2rem;
+}
+
+.entry__body > * + * {
+  margin-top: var(--space-2xs);
+}
+
+.entry__title {
+  font-family: var(--font-serif);
+  font-size: var(--step-1);
+  font-weight: 600;
+  line-height: 1.3;
+}
+
+.entry__meta {
+  color: var(--graphite);
+  font-size: var(--step--1);
+}
+
+.entry__links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2xs) var(--space-m);
+  margin-top: var(--space-xs) !important;
+  font-size: var(--step--1);
+  font-weight: 600;
+}
+
+.tag {
+  display: inline-block;
+  padding: 0.1rem 0.55rem;
+  border-radius: 999px;
+  background: var(--artery-wash);
+  color: var(--artery);
+  font-size: 0.8125rem;
+  font-weight: 600;
+  line-height: 1.6;
+}
+
+@media (max-width: 40rem) {
+  .entry {
+    grid-template-columns: 1fr;
+  }
+
+  .entry__when {
+    padding-top: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/*
+ * Scroll-driven reveals (CSS only, progressive enhancement). Browsers without
+ * animation-timeline simply show the content. Each variant has its own motion
+ * so sections do not all enter the same way.
+ */
+@supports (animation-timeline: view()) {
+  @media (prefers-reduced-motion: no-preference) {
+    .reveal {
+      animation: reveal-up linear both;
+      animation-timeline: view();
+      animation-range: entry 0% entry 55%;
+    }
+
+    .reveal-clip {
+      animation: reveal-clip linear both;
+      animation-timeline: view();
+      animation-range: entry 0% entry 90%;
+    }
+
+    .reveal-rule {
+      animation: reveal-rule linear both;
+      animation-timeline: view();
+      animation-range: entry 10% entry 80%;
+      transform-origin: left center;
+    }
+
+    .reveal-stagger > * {
+      animation: reveal-up linear both;
+      animation-timeline: view();
+      animation-range: entry 0% entry 70%;
+    }
+
+    .reveal-stagger > *:nth-child(2) {
+      animation-range: entry 8% entry 78%;
+    }
+
+    .reveal-stagger > *:nth-child(3) {
+      animation-range: entry 16% entry 86%;
+    }
+  }
+}
+
+@keyframes reveal-up {
+  from {
+    opacity: 0;
+    transform: translateY(1.75rem);
+  }
+}
+
+@keyframes reveal-up-sm {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+}
+
+@keyframes reveal-clip {
+  from {
+    clip-path: inset(18% 8% 18% 8% round var(--radius));
+    opacity: 0.4;
+    transform: scale(0.97);
+  }
+  to {
+    clip-path: inset(0 0 0 0 round var(--radius));
+  }
+}
+
+@keyframes reveal-rule {
+  from {
+    transform: scaleX(0);
+  }
+}
+
+/* Page-load entrance used by the hero: one orchestrated sequence. */
+.enter-mask,
+.enter-mask > span {
+  display: block;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .enter {
+    animation: enter 900ms var(--ease-out) both;
+    animation-delay: calc(var(--d, 0) * 110ms + 80ms);
+  }
+
+  .enter-mask {
+    overflow: hidden;
+    padding-bottom: 0.08em;
+  }
+
+  .enter-mask > span {
+    animation: enter-mask 1000ms var(--ease-out) both;
+    animation-delay: calc(var(--d, 0) * 110ms + 60ms);
+  }
+}
+
+@keyframes enter {
+  from {
+    opacity: 0;
+    transform: translateY(1rem);
+    filter: blur(6px);
+  }
+}
+
+@keyframes enter-mask {
+  from {
+    transform: translateY(105%);
+  }
+}
+
+.button .icon {
+  width: 1.05em;
+  height: 1.05em;
+  flex: none;
+}
+
+/*
+ * Touch targets: on touch screens and small viewports every standalone link
+ * and button is at least 44px tall (CLAUDE.md). Inline links inside running
+ * text keep their line height.
+ */
+@media (pointer: coarse), (max-width: 40rem) {
+  .entry__links a,
+  .link-button,
+  .site-footer__links a,
+  .site-footer nav a,
+  .site-footer__legal a,
+  .lang-link,
+  .brand,
+  .contact__email a,
+  .more a,
+  .list-link {
+    display: inline-flex;
+    align-items: center;
+    min-height: 44px;
+    /* Short words ("Code", "Talks") still get a 44px-wide target. */
+    min-width: 44px;
+  }
+}
+
+/*
+ * Pause / play control for looping scenes (WCAG 2.2.2). Shown by the scene
+ * script only when motion is allowed; the label switches between
+ * "Pause animation" and "Play animation".
+ */
+.scene {
+  position: relative;
+}
+
+.scene-pause {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  z-index: 2;
+  display: inline-grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  padding: 0;
+  border: 1px solid var(--rule);
+  border-radius: 999px;
+  background: var(--plate);
+  color: var(--graphite);
+  cursor: pointer;
+  transition:
+    border-color 160ms ease,
+    color 160ms ease,
+    transform 160ms var(--ease-out);
+}
+
+.scene-pause[hidden] {
+  display: none;
+}
+
+.scene-pause svg {
+  grid-area: 1 / 1;
+  width: 16px;
+  height: 16px;
+}
+
+.scene-pause .scene-pause__play,
+.scene-pause[data-paused] .scene-pause__pause {
+  display: none;
+}
+
+.scene-pause[data-paused] .scene-pause__play {
+  display: block;
+}
+
+@media (hover: hover) {
+  .scene-pause:hover {
+    border-color: var(--ink);
+    color: var(--ink);
+  }
+}
+
+.scene-pause:active {
+  transform: scale(0.94);
+}
+
+/*
+ * Time-based reveal of a group's children (src/scripts/reveal.ts). Add
+ * `data-reveal` and the class `reveal-kids` to a list; give each child
+ * `--i` for the stagger. Pending only with JS and motion allowed; a fail-safe
+ * shows the content after 3s if the script never marks it "pending".
+ */
+@media (prefers-reduced-motion: no-preference) {
+  :root.js .reveal-kids[data-reveal]:not([data-reveal='in']) > * {
+    opacity: 0;
+  }
+
+  /* Fail-safe: the script never marked it, so show it anyway. */
+  :root.js .reveal-kids[data-reveal=''] > * {
+    animation: reveal-failsafe 1ms 3s forwards;
+  }
+
+  :root.js .reveal-kids[data-reveal='in'] > * {
+    animation: reveal-up-sm 320ms var(--ease-out) both;
+    animation-delay: calc(var(--i, 0) * var(--stagger, 40ms));
+  }
+}
+
+@keyframes reveal-failsafe {
+  to {
+    opacity: 1;
+  }
+}
+
+/*
+ * Page-to-page transitions (Chromium 126+, Safari 18.2+; others navigate
+ * normally): the page cross-fades and rises slightly while the header holds
+ * still. Only when motion is allowed.
+ */
+@media (prefers-reduced-motion: no-preference) {
+  @view-transition {
+    navigation: auto;
+  }
+
+  .site-header {
+    view-transition-name: site-header;
+  }
+
+  ::view-transition-old(root) {
+    animation: 140ms ease-in both vt-out;
+  }
+
+  ::view-transition-new(root) {
+    animation: 320ms var(--ease-out) 60ms both vt-in;
+  }
+}
+
+@keyframes vt-out {
+  to {
+    opacity: 0;
+  }
+}
+
+@keyframes vt-in {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+}
+
+/*
+ * Disclosure (<details class="disclosure">): 44px summary with a chevron,
+ * height animation in Chromium (::details-content + interpolate-size),
+ * instant elsewhere and with reduced motion; list items stagger in.
+ * Used by the Experience stops and the grouped talk card.
+ */
+.disclosure summary {
+  min-height: 44px;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  list-style: none;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: var(--step--1);
+  color: var(--ink);
+  border-radius: 6px;
+}
+
+.disclosure summary::-webkit-details-marker {
+  display: none;
+}
+
+.disclosure .chev {
+  width: 1rem;
+  height: 1rem;
+  flex: none;
+  transition: transform 220ms var(--ease-out);
+}
+
+.disclosure[open] > summary .chev {
+  transform: rotate(180deg);
+}
+
+@media (hover: hover) {
+  .disclosure summary:hover {
+    text-decoration: underline;
+    text-decoration-color: var(--artery);
+    text-decoration-thickness: 2px;
+    text-underline-offset: 0.25em;
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .disclosure::details-content {
+    block-size: 0;
+    overflow: clip;
+    transition:
+      block-size 320ms var(--ease-out),
+      content-visibility 320ms allow-discrete;
+  }
+
+  .disclosure[open]::details-content {
+    block-size: auto;
+  }
+
+  .disclosure[open] > ul > li {
+    animation: reveal-up-sm 360ms var(--ease-out) both;
+    animation-delay: calc(var(--i, 0) * 45ms + 60ms);
+  }
+}
+
+@media print {
+  .disclosure::details-content {
+    block-size: auto;
+    content-visibility: visible;
+  }
+}

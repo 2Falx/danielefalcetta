@@ -1,0 +1,149 @@
+{
+  "version": 2,
+  "skills": {
+    "accessibility": {
+      "source": "addyosmani/web-quality-skills",
+      "commit": "afa8da942115f2961fdbfa80807ea0b232ff6c00",
+      "sourceType": "github",
+      "skillPath": "skills/accessibility/SKILL.md",
+      "computedHash": "c668809f5df57feb87cc06f1bc37fb340d1d92e26bacb6edbeab9258d22e76a5",
+      "installMode": "copy"
+    },
+    "animate": {
+      "source": "emilkowalski/skills",
+      "commit": "64eb3deb9a5fbfa041faf783e0bc3fd635872e9c",
+      "sourceType": "github",
+      "skillPath": "skills/animate/SKILL.md",
+      "computedHash": "c622e29fa956aea703dc4e2b8726d9a017d438beb284a60bc3fdb2540c602102",
+      "installMode": "copy"
+    },
+    "animation-performance": {
+      "source": "emilkowalski/skills",
+      "commit": "64eb3deb9a5fbfa041faf783e0bc3fd635872e9c",
+      "sourceType": "github",
+      "skillPath": "skills/animation-performance/SKILL.md",
+      "computedHash": "1ff92f577fc2b7781ed622fd4eb5e514c252cf5cb95c3661743cd127ee01290a",
+      "installMode": "copy"
+    },
+    "best-practices": {
+      "source": "addyosmani/web-quality-skills",
+      "commit": "afa8da942115f2961fdbfa80807ea0b232ff6c00",
+      "sourceType": "github",
+      "skillPath": "skills/best-practices/SKILL.md",
+      "computedHash": "071ad7608cf92ad980330a6b1646f6bc568f5651d615e4c4a9fde225ceb9360c",
+      "installMode": "copy"
+    },
+    "core-web-vitals": {
+      "source": "addyosmani/web-quality-skills",
+      "commit": "afa8da942115f2961fdbfa80807ea0b232ff6c00",
+      "sourceType": "github",
+      "skillPath": "skills/core-web-vitals/SKILL.md",
+      "computedHash": "de50c203aa9dafa8dee9dd8c06782e3fc610704b83c1c408e4c5ee2337c4cd2a",
+      "installMode": "copy"
+    },
+    "design-taste-frontend": {
+      "source": "Leonxlnx/taste-skill",
+      "commit": "f6b76575f949707b4e3c37cd86cb44b0b98643e8",
+      "sourceType": "github",
+      "skillPath": "skills/taste-skill/SKILL.md",
+      "computedHash": "b10eab0a9684cd09cf34c31ef04a3bf530a5f4404422f9c520d42372d670c7fc",
+      "installMode": "copy"
+    },
+    "emil-design-eng": {
+      "source": "emilkowalski/skills",
+      "commit": "64eb3deb9a5fbfa041faf783e0bc3fd635872e9c",
+      "sourceType": "github",
+      "skillPath": "skills/emil-design-eng/SKILL.md",
+      "computedHash": "e1b377ccde1d32743d1d3f7d8626629deb8055c9114d180c184697928cc66cc6",
+      "installMode": "copy"
+    },
+    "frontend-design": {
+      "source": "anthropics/skills",
+      "commit": "e4bb5d960d87126ff3b3a8af1a104b7db67560ba",
+      "sourceType": "github",
+      "skillPath": "skills/frontend-design/SKILL.md",
+      "computedHash": "83485963700bcf11d5bf78118facb301676b69d918fee2e45a95e7f1a2840f6c",
+      "installMode": "copy"
+    },
+    "impeccable": {
+      "source": "pbakaus/impeccable",
+      "commit": "d41d9860b0094dcb68030657da63461212835aaa",
+      "sourceType": "github",
+      "skillPath": ".agents/skills/impeccable/SKILL.md",
+      "computedHash": "077889e9782761360c17acbc2522af320d0dd0f928b09cd90884fa304f443a34",
+      "installMode": "copy"
+    },
+    "mobile-native": {
+      "source": "emilkowalski/skills",
+      "commit": "64eb3deb9a5fbfa041faf783e0bc3fd635872e9c",
+      "sourceType": "github",
+      "skillPath": "skills/mobile-native/SKILL.md",
+      "computedHash": "2f55a258f185314d585cb6a3514a66c15e9cfc8cd45c936284c4fb7374603d7e",
+      "installMode": "copy"
+    },
+    "performance": {
+      "source": "addyosmani/web-quality-skills",
+      "commit": "afa8da942115f2961fdbfa80807ea0b232ff6c00",
+      "sourceType": "github",
+      "skillPath": "skills/performance/SKILL.md",
+      "computedHash": "06902ebc4a8b91bfb8d1a99a03f186f0535b03d1a776ef751206104ef9b86c4c",
+      "installMode": "copy"
+    },
+    "review-animations": {
+      "source": "emilkowalski/skills",
+      "commit": "64eb3deb9a5fbfa041faf783e0bc3fd635872e9c",
+      "sourceType": "github",
+      "skillPath": "skills/review-animations/SKILL.md",
+      "computedHash": "50f1de2394b88bb3433eca1e30da6866a4e310963d872a66af20ca77fd77f07d",
+      "installMode": "copy"
+    },
+    "seo": {
+      "source": "addyosmani/web-quality-skills",
+      "commit": "afa8da942115f2961fdbfa80807ea0b232ff6c00",
+      "sourceType": "github",
+      "skillPath": "skills/seo/SKILL.md",
+      "computedHash": "fa30e94756c5c40663f4527e8220a985393abbe3a6256e43d02589948027467e",
+      "installMode": "copy"
+    },
+    "ui-ux-pro-max": {
+      "source": "nextlevelbuilder/ui-ux-pro-max-skill",
+      "commit": "e59ff376a41f7ca47b7541ad5c116495cbade3ee",
+      "sourceType": "github",
+      "skillPath": ".claude/skills/ui-ux-pro-max/SKILL.md",
+      "computedHash": "9700c4f6c9460810a4158f3a6d3238d8ee58bc682e0aa7190c2c333cf6c666b1",
+      "installMode": "copy"
+    },
+    "web-design-guidelines": {
+      "source": "vercel-labs/agent-skills",
+      "commit": "1a2c79d4e6c4a2283dc2c614b6538cbe1ed5ca62",
+      "sourceType": "github",
+      "skillPath": "skills/web-design-guidelines/SKILL.md",
+      "computedHash": "4f68ae07187fb0d1fb78c88b503d089da4cf5a9d9625d1f2e425b1590bf96d92",
+      "installMode": "copy"
+    },
+    "web-quality-audit": {
+      "source": "addyosmani/web-quality-skills",
+      "commit": "afa8da942115f2961fdbfa80807ea0b232ff6c00",
+      "sourceType": "github",
+      "skillPath": "skills/web-quality-audit/SKILL.md",
+      "computedHash": "fed16ecc3591b557381b15f4c1659b5536f064cecea851799c2dad4668b325b4",
+      "installMode": "copy"
+    },
+    "webapp-testing": {
+      "source": "anthropics/skills",
+      "commit": "e4bb5d960d87126ff3b3a8af1a104b7db67560ba",
+      "sourceType": "github",
+      "skillPath": "skills/webapp-testing/SKILL.md",
+      "computedHash": "48cd9a742a59250edec6db89cf081ef5465f365e2133f6d6c5e29c380b754b7d",
+      "installMode": "copy"
+    },
+    "writing-guidelines": {
+      "source": "vercel-labs/agent-skills",
+      "commit": "1a2c79d4e6c4a2283dc2c614b6538cbe1ed5ca62",
+      "sourceType": "github",
+      "skillPath": "skills/writing-guidelines/SKILL.md",
+      "computedHash": "fe1390adbe2f7ba68d5fb85d3b14a1d55e71ce04cff5c175245c550d1c3a6f7e",
+      "installMode": "copy"
+    }
+  }
+}

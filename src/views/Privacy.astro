@@ -1,0 +1,159 @@
+---
+/**
+ * Privacy notice (GDPR art. 13). Every statement here must stay true of the
+ * code: if you add analytics, forms, embeds or fonts from a CDN, update this
+ * page and re-run the pre-publish checklist (.claude/skills/prepublish-check).
+ */
+import Base from '../layouts/Base.astro';
+import type { Lang } from '../i18n/ui';
+import { person } from '../data/profile';
+
+interface Props {
+  lang: Lang;
+}
+
+const { lang } = Astro.props;
+const updated = { en: '17 November 2026', it: '17 novembre 2026' };
+const githubPrivacy = 'https://docs.github.com/en/site-policy/privacy-policies/github-general-privacy-statement';
+const googlePrivacy = 'https://policies.google.com/privacy';
+const garante = 'https://www.garanteprivacy.it/';
+const mail = `mailto:${person.email}`;
+---
+
+<Base lang={lang} title={lang === 'it' ? 'Informativa privacy' : 'Privacy notice'}>
+  <article class="wrap page-head prose">
+    {
+      lang === 'it' ? (
+        <>
+          <h1>Informativa sulla privacy</h1>
+          <p>Ultimo aggiornamento: {updated.it}.</p>
+
+          <h2>Chi è il titolare</h2>
+          <p>
+            Questo è il sito personale di {person.name}, titolare del trattamento descritto in questa pagina. Per
+            qualsiasi richiesta puoi scrivere a <a href={mail}>{person.email}</a>.
+          </p>
+
+          <h2>Cosa raccoglie il sito</h2>
+          <p>
+            Io non raccolgo nulla. Il sito è composto da pagine statiche: non usa cookie, non ha statistiche di visita,
+            non contiene moduli e non carica script di terze parti. I font sono ospitati sul sito stesso.
+          </p>
+          <p>
+            Se premi il pulsante per cambiare tema, la tua scelta (chiaro o scuro) viene salvata nella memoria locale del
+            tuo browser per ricordarla alla visita successiva. Resta sul tuo dispositivo, non mi viene inviata e puoi
+            cancellarla dalle impostazioni del browser.
+          </p>
+
+          <h2>Hosting</h2>
+          <p>
+            Il sito è ospitato su GitHub Pages, un servizio di GitHub, Inc. con sede negli Stati Uniti. Come ogni server
+            web, quello di GitHub riceve il tuo indirizzo IP e i dati tecnici della richiesta quando visiti una pagina;
+            GitHub li tratta secondo la propria{' '}
+            <a href={githubPrivacy} rel="noopener">
+              informativa sulla privacy
+            </a>
+            . Io non ho accesso a questi dati. GitHub, Inc. può trattarli negli Stati Uniti; le garanzie per questo
+            trasferimento sono indicate nell’informativa di GitHub citata sopra.
+          </p>
+
+          <h2>Contenuti esterni</h2>
+          <p>
+            Nella pagina Interventi le slide su Google Slides vengono caricate solo se premi “Carica le slide da Google”.
+            Da quel momento il tuo browser si collega a Google, che può impostare cookie e ricevere il tuo indirizzo IP,
+            secondo l’
+            <a href={googlePrivacy} rel="noopener">
+              informativa di Google
+            </a>
+            . In alternativa puoi aprire le slide direttamente su Google Slides. I link a LinkedIn, Google Scholar,
+            GitHub e ad altri siti portano fuori da questo sito, su siti con regole proprie.
+          </p>
+
+          <h2>Se mi scrivi</h2>
+          <p>
+            Se mi scrivi via email, uso il tuo indirizzo e il contenuto del messaggio solo per risponderti e li conservo
+            solo per il tempo necessario alla conversazione. Non li condivido con nessuno e non li uso per altri scopi. La
+            base giuridica è il mio legittimo interesse a rispondere ai messaggi che ricevo (art. 6, par. 1, lettera f,
+            del GDPR).
+          </p>
+
+          <h2>I tuoi diritti</h2>
+          <p>
+            In base al Regolamento (UE) 2016/679 (GDPR) puoi chiedermi in qualsiasi momento di accedere ai tuoi dati, di
+            rettificarli o cancellarli, di limitarne il trattamento o di opporti al trattamento, scrivendo a{' '}
+            <a href={mail}>{person.email}</a>. Hai anche il diritto di presentare reclamo a un’autorità di controllo; in
+            Italia è il{' '}
+            <a href={garante} rel="noopener">
+              Garante per la protezione dei dati personali
+            </a>
+            .
+          </p>
+        </>
+      ) : (
+        <>
+          <h1>Privacy notice</h1>
+          <p>Last updated: {updated.en}.</p>
+
+          <h2>Who is responsible</h2>
+          <p>
+            This is the personal website of {person.name}, who is the data controller for the processing described
+            here. You can reach me at <a href={mail}>{person.email}</a>.
+          </p>
+
+          <h2>What the site collects</h2>
+          <p>
+            I collect nothing. The site is made of static pages: it sets no cookies, has no visitor analytics, contains
+            no forms and loads no third-party scripts. Fonts are served from this site.
+          </p>
+          <p>
+            If you press the theme button, your choice (light or dark) is saved in your browser’s local storage so it is
+            remembered on your next visit. It stays on your device, is never sent to me, and you can clear it in your
+            browser settings.
+          </p>
+
+          <h2>Hosting</h2>
+          <p>
+            The site is hosted on GitHub Pages, a service of GitHub, Inc., based in the United States. Like any web
+            server, GitHub’s servers receive your IP address and technical request data when you visit a page. GitHub
+            processes this data under its own{' '}
+            <a href={githubPrivacy} rel="noopener">
+              privacy statement
+            </a>
+            . I have no access to this data. GitHub, Inc. may process it in the United States; the safeguards for this
+            transfer are described in GitHub’s privacy statement linked above.
+          </p>
+
+          <h2>External content</h2>
+          <p>
+            On the Talks page, Google Slides decks are loaded only if you press “Load slides from Google”. From that
+            moment your browser connects to Google, which may set cookies and receive your IP address under{' '}
+            <a href={googlePrivacy} rel="noopener">
+              Google’s privacy policy
+            </a>
+            . You can instead open the slides directly in Google Slides. Links to LinkedIn, Google Scholar, GitHub and
+            other sites take you off this site; their own rules apply there.
+          </p>
+
+          <h2>If you write to me</h2>
+          <p>
+            If you email me, I use your address and message only to reply, and keep them only as long as the
+            conversation needs. I do not share them or use them for anything else. The legal basis is my legitimate
+            interest in replying to the messages I receive (art. 6(1)(f) GDPR).
+          </p>
+
+          <h2>Your rights</h2>
+          <p>
+            Under the EU General Data Protection Regulation (GDPR) you can ask me at any time to access, correct or
+            delete your data, to restrict its processing or to object to it, by writing to{' '}
+            <a href={mail}>{person.email}</a>. You also have the right to lodge a complaint with a supervisory
+            authority; in Italy this is the{' '}
+            <a href={garante} rel="noopener">
+              Garante per la protezione dei dati personali
+            </a>
+            .
+          </p>
+        </>
+      )
+    }
+  </article>
+</Base>

@@ -1,0 +1,33 @@
+---
+/**
+ * Pause / play button for a looping scene (WCAG 2.2.2). Rendered hidden; the
+ * scene script reveals it only when motion is allowed and toggles
+ * `data-paused`, swapping the icon and the label (no aria-pressed: the label
+ * itself says what the button will do). Styles live in global.css.
+ */
+import { type Lang, t } from '../i18n/ui';
+
+interface Props {
+  lang: Lang;
+}
+
+const { lang } = Astro.props;
+---
+
+<button
+  type="button"
+  class="scene-pause"
+  hidden
+  aria-label={t(lang, 'motion.pause')}
+  data-scene-pause
+  data-label-pause={t(lang, 'motion.pause')}
+  data-label-play={t(lang, 'motion.play')}
+>
+  <svg class="scene-pause__pause" viewBox="0 0 16 16" aria-hidden="true" fill="currentColor">
+    <rect x="3.5" y="2.5" width="3" height="11" rx="1"></rect>
+    <rect x="9.5" y="2.5" width="3" height="11" rx="1"></rect>
+  </svg>
+  <svg class="scene-pause__play" viewBox="0 0 16 16" aria-hidden="true" fill="currentColor">
+    <path d="M4.5 2.9v10.2a.8.8 0 0 0 1.2.7l8.2-5.1a.8.8 0 0 0 0-1.4L5.7 2.2a.8.8 0 0 0-1.2.7Z"></path>
+  </svg>
+</button>

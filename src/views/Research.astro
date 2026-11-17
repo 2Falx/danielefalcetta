@@ -1,0 +1,380 @@
+---
+import { Image, getImage } from 'astro:assets';
+import Base from '../layouts/Base.astro';
+import WillisGraph from '../components/WillisGraph.astro';
+import TalkRail from '../components/TalkRail.astro';
+import { type Lang, enIfSame, pick, route, t } from '../i18n/ui';
+import { talks } from '../data/talks';
+import { kindLabel, projects, publications, slug } from '../data/research';
+import { person } from '../data/profile';
+
+interface Props {
+  lang: Lang;
+}
+
+const { lang } = Astro.props;
+
+const copy = {
+  title: { en: 'Research', it: 'Ricerca' },
+  description: {
+    en: 'PhD research: deep learning for 3D medical imaging with little labelled data. Papers at MICCAI 2025, ISBI 2026, BMVC 2023 and in MELBA.',
+    it: 'Ricerca di dottorato: deep learning per l’imaging medico 3D con pochi dati etichettati. Articoli a MICCAI 2025, ISBI 2026, BMVC 2023 e su MELBA.',
+  },
+  lead: {
+    en: 'My PhD research (2023–2026): deep learning for 3D medical imaging with little labelled data.',
+    it: 'La mia ricerca di dottorato (2023–2026): deep learning per l’imaging medico 3D con pochi dati etichettati.',
+  },
+  projects: { en: 'Projects', it: 'Progetti' },
+  publications: { en: 'Publications', it: 'Pubblicazioni' },
+  scholar: {
+    en: 'Full list on Google Scholar',
+    it: 'Elenco completo su Google Scholar',
+  },
+  fullSize: { en: 'View figure at full size', it: 'Apri la figura ingrandita' },
+  erc: { en: 'ERC CARAVEL project', it: 'Progetto ERC CARAVEL' },
+  fig: { en: 'Fig.', it: 'Fig.' },
+};
+
+// Figures only for the three projects featured on Home; the others are compact rows.
+const featured = projects.filter((p) => p.featured);
+const others = projects.filter((p) => !p.featured);
+
+// Full-size versions for the "view at full size" link: a large WebP instead of the multi-megabyte original PNG.
+const fullSize = new Map(
+  await Promise.all(
+    featured
+      .filter((p) => p.figure)
+      .map(async (p) => {
+        const img = await getImage({ src: p.figure!.src, width: Math.min(2400, p.figure!.src.width), format: 'webp' });
+        return [p.title.en, img.src] as const;
+      }),
+  ),
+);
+const years = [...new Set(publications.map((p) => p.year))];
+const singleTalks = talks.filter((tk) => tk.deck);
+const markSelf = (authors: string) =>
+  authors.replace(/(D\. Falcetta\*?)/g, '<strong>$1</strong>');
+---
+
+<Base lang={lang} title={pick(copy.title, lang)} description={pick(copy.description, lang)}>
+  <header class="wrap page-head research-head">
+    <div class="research-head__text">
+      <h1>{pick(copy.title, lang)}</h1>
+      <p>{pick(copy.lead, lang)}</p>
+    </div>
+    <div class="research-head__figure">
+      <WillisGraph lang={lang} />
+    </div>
+  </header>
+
+  <section class="section" aria-labelledby="projects-title">
+    <div class="wrap">
+      <h2 id="projects-title" class="section-title">{pick(copy.projects, lang)}</h2>
+      <div class="projects">
+        {
+          featured.map((p, n) => (
+            <article id={slug(p)} class="project">
+              <div class="project__text reveal">
+                <p class="project__meta num">{p.venue.includes(p.year) ? p.venue : `${p.venue}, ${p.year}`}</p>
+                <h3>{pick(p.title, lang)}</h3>
+                <p>{pick(p.summary, lang)}</p>
+                {p.erc && <p class="project__erc">{pick(copy.erc, lang)}</p>}
+                <p class="entry__links">
+                  {p.links.map((l) => (
+                    <a href={l.href} rel="noopener">
+                      {pick(l.label, lang)}
+                    </a>
+                  ))}
+                </p>
+              </div>
+              {p.figure && (
+                <figure class="project__figure">
+                  <a href={fullSize.get(p.title.en)} class="project__plate reveal-clip">
+                    <span class="visually-hidden">{pick(copy.fullSize, lang)}: </span>
+                    <Image
+                      src={p.figure.src}
+                      alt={pick(p.figure.alt, lang)}
+                      width={1200}
+                      widths={[480, 800, 1200]}
+                      sizes="(min-width: 60rem) 40rem, 100vw"
+                      loading="lazy"
+                    />
+                  </a>
+                  <figcaption>
+                    {pick(copy.fig, lang)} {n + 1}. {pick(p.title, lang)}
+                  </figcaption>
+                </figure>
+              )}
+            </article>
+          ))
+        }
+      </div>
+      <div class="projects-more reveal-kids" data-reveal>
+        {
+          others.map((p, i) => (
+            <article id={slug(p)} class="project-row" style={`--i:${i}`}>
+              <p class="project__meta num">{p.venue.includes(p.year) ? p.venue : `${p.venue}, ${p.year}`}</p>
+              <h3>{pick(p.title, lang)}</h3>
+              <p class="project-row__summary">{pick(p.summary, lang)}</p>
+              {p.erc && <p class="project__erc">{pick(copy.erc, lang)}</p>}
+              <p class="entry__links">
+                {p.links.map((l) => (
+                  <a href={l.href} rel="noopener">
+                    {pick(l.label, lang)}
+                  </a>
+                ))}
+              </p>
+            </article>
+          ))
+        }
+      </div>
+    </div>
+  </section>
+
+  <section class="section" aria-labelledby="pubs-title">
+    <div class="wrap">
+      <h2 id="pubs-title" class="section-title">{pick(copy.publications, lang)}</h2>
+      {
+        years.map((y) => (
+          <section class="pub-year" aria-label={y}>
+            <h3 class="pub-year__label num">{y}</h3>
+            <ol class="pubs" role="list">
+              {publications
+                .filter((p) => p.year === y)
+                .map((p) => (
+                  <li class="pub reveal">
+                    <p class="pub__title" lang={enIfSame(p.title, lang)}>
+                      {p.href ? <a href={p.href} rel="noopener">{p.title}</a> : p.title}
+                    </p>
+                    {!p.hasProject && <p class="pub__authors" set:html={markSelf(p.authors)} />}
+                    <p class="pub__venue">{p.venue}</p>
+                    <p class="pub__tags">
+                      <span class="tag tag--quiet">{pick(kindLabel[p.kind], lang)}</span>
+                      {p.notes?.map((n) => <span class="tag">{pick(n, lang)}</span>)}
+                    </p>
+                  </li>
+                ))}
+            </ol>
+          </section>
+        ))
+      }
+      <p class="more">
+        <a href={person.links.scholar} rel="me noopener">{pick(copy.scholar, lang)}</a>
+      </p>
+    </div>
+  </section>
+
+  <section class="section" id="talks" aria-labelledby="talks-title">
+    <div class="wrap">
+      <h2 id="talks-title" class="section-title">{t(lang, 'nav.talks')}</h2>
+      <TalkRail talks={singleTalks} lang={lang} variant="rail" />
+      <p class="more"><a href={route(lang, 'talks')}>{t(lang, 'talks.all')}</a></p>
+    </div>
+  </section>
+</Base>
+
+<style>
+  .research-head {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 24rem);
+    gap: var(--space-xl);
+    align-items: center;
+  }
+
+  .research-head__figure {
+    width: 100%;
+  }
+
+  .research-head__figure :global(figcaption) {
+    margin-top: var(--space-xs);
+    font-size: var(--step--1) !important;
+    color: var(--graphite) !important;
+  }
+
+  @media (max-width: 52rem) {
+    .research-head {
+      grid-template-columns: minmax(0, 1fr);
+      gap: var(--space-l);
+    }
+
+    .research-head__figure {
+      max-width: 22rem;
+      justify-self: center;
+    }
+  }
+
+  .projects {
+    display: grid;
+    gap: var(--space-2xl);
+  }
+
+  .project {
+    display: grid;
+    grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
+    gap: var(--space-xl);
+    align-items: start;
+  }
+
+  /* Other projects: compact text rows, two columns on wide screens. */
+  .projects-more {
+    --stagger: 60ms;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: var(--space-l) var(--space-xl);
+    margin-top: var(--space-2xl);
+    padding-top: var(--space-l);
+    border-top: 1px solid var(--rule);
+  }
+
+  .project-row > * + * {
+    margin-top: var(--space-2xs);
+  }
+
+  .project-row h3 {
+    font-size: var(--step-1);
+  }
+
+  .project-row__summary {
+    color: var(--graphite);
+    max-width: 52ch;
+  }
+
+  .project__text > * + * {
+    margin-top: var(--space-s);
+  }
+
+  .project__meta {
+    color: var(--graphite);
+    font-size: var(--step--1);
+    font-weight: 600;
+  }
+
+  .project h3 {
+    font-size: var(--step-2);
+    margin-top: var(--space-2xs) !important;
+  }
+
+  .project__erc {
+    font-size: var(--step--1);
+    color: var(--graphite);
+  }
+
+  .project__figure {
+    margin: 0;
+  }
+
+  .project__plate {
+    display: block;
+    padding: var(--space-m);
+    background: #fff;
+    border: 1px solid var(--rule);
+    border-radius: var(--radius);
+    transition: border-color 160ms ease;
+  }
+
+  @media (hover: hover) {
+    .project__plate:hover {
+      border-color: var(--graphite);
+    }
+  }
+
+  .project__plate :global(img) {
+    width: 100%;
+    height: auto;
+  }
+
+  .project__figure figcaption {
+    margin-top: var(--space-xs);
+    color: var(--graphite);
+    font-size: var(--step--1);
+  }
+
+  .pub-year {
+    display: grid;
+    grid-template-columns: 5.5rem 1fr;
+    gap: var(--space-m);
+    padding-block: var(--space-m);
+    border-top: 1px solid var(--rule);
+  }
+
+  .pub-year:last-of-type {
+    border-bottom: 1px solid var(--rule);
+  }
+
+  .pub-year__label {
+    font-family: var(--font-sans);
+    font-size: var(--step--1);
+    font-weight: 600;
+    color: var(--graphite);
+    padding-top: 0.2rem;
+  }
+
+  .pubs {
+    list-style: none;
+    padding: 0;
+    display: grid;
+    gap: var(--space-l);
+  }
+
+  .pub > * + * {
+    margin-top: var(--space-2xs);
+  }
+
+  .pub__title {
+    font-family: var(--font-serif);
+    font-size: var(--step-1);
+    font-weight: 600;
+    line-height: 1.35;
+  }
+
+  .pub__authors,
+  .pub__venue {
+    color: var(--graphite);
+    font-size: var(--step--1);
+  }
+
+  .pub__authors :global(strong) {
+    color: var(--ink);
+  }
+
+  .pub__tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2xs);
+    margin-top: var(--space-xs) !important;
+  }
+
+  .tag--quiet {
+    background: transparent;
+    color: var(--graphite);
+    border: 1px solid var(--rule);
+  }
+
+  .more {
+    margin-top: var(--space-l);
+    font-weight: 600;
+  }
+
+  @media (max-width: 60rem) {
+    .project {
+      grid-template-columns: 1fr;
+      gap: var(--space-m);
+    }
+
+    .projects-more {
+      grid-template-columns: 1fr;
+      margin-top: var(--space-xl);
+    }
+  }
+
+  @media (max-width: 40rem) {
+    .pub-year {
+      grid-template-columns: 1fr;
+      gap: var(--space-s);
+    }
+
+    .project__plate {
+      padding: var(--space-xs);
+    }
+  }
+</style>

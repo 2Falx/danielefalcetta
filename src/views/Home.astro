@@ -1,0 +1,716 @@
+---
+import { Picture } from 'astro:assets';
+import Base from '../layouts/Base.astro';
+import WillisGraph from '../components/WillisGraph.astro';
+import EmbeddingHero from '../components/EmbeddingHero.astro';
+import Icon from '../components/Icon.astro';
+import Logo, { type LogoName } from '../components/Logo.astro';
+import TechLogo from '../components/TechLogo.astro';
+import { type Lang, asset, enIfSame, pick, route, t } from '../i18n/ui';
+import { now, person, tagline } from '../data/profile';
+import { projects, slug } from '../data/research';
+import portrait from '../assets/portrait.jpg';
+
+interface Props {
+  lang: Lang;
+}
+
+const { lang } = Astro.props;
+const selected = projects.filter((p) => p.featured);
+const [first, last] = person.name.split(' ');
+
+const affiliations: { logo: LogoName; href: string }[] = [
+  { logo: 'accenture', href: 'https://www.accenture.com/' },
+  { logo: 'sap', href: 'https://www.sap.com/' },
+  { logo: 'sorbonne', href: 'https://www.sorbonne-universite.fr/' },
+  { logo: 'eurecom', href: 'https://www.eurecom.fr/' },
+  { logo: 'polito', href: 'https://www.polito.it/' },
+];
+
+const copy = {
+  affiliations: { en: 'Worked and studied at', it: 'Dove ho lavorato e studiato' },
+  selected: { en: 'From my PhD', it: 'Dal dottorato' },
+  allResearch: { en: 'All projects and publications', it: 'Tutti i progetti e le pubblicazioni' },
+  contactTitle: { en: 'Let’s talk', it: 'Parliamone' },
+  portraitAlt: {
+    en: 'Daniele Falcetta smiling with arms crossed, in a brown suit jacket and white T-shirt, in front of concrete steps.',
+    it: 'Daniele Falcetta sorridente a braccia conserte, con giacca marrone e maglietta bianca, davanti a una scalinata di cemento.',
+  },
+};
+---
+
+<Base lang={lang}>
+  <section class="hero">
+    <div class="wrap hero__grid">
+      <div class="hero__text">
+        <h1 class="hero__name">
+          <span class="enter-mask" style="--d:0"><span>{first}</span></span>{' '}
+          <span class="enter-mask" style="--d:1"><span>{last}</span></span>
+        </h1>
+        <p class="hero__role enter" style="--d:2" lang={enIfSame(person.role, lang)}>{pick(person.role, lang)}</p>
+        <p class="hero__tagline enter" style="--d:3">{pick(tagline, lang)}</p>
+        <div class="actions enter" style="--d:4">
+          <a class="button button--primary" href={asset(person.cv)} download>
+            <Icon name="download" class="icon" />
+            {t(lang, 'cta.cv')}
+          </a>
+          <a class="button" href={person.links.linkedin} rel="me noopener">
+            <Icon name="linkedin" class="icon" />
+            LinkedIn
+          </a>
+          <a class="button" href={`mailto:${person.email}`}>
+            <Icon name="mail" class="icon" />
+            {t(lang, 'cta.email')}
+          </a>
+        </div>
+      </div>
+      <div class="hero__figure">
+        <EmbeddingHero lang={lang} />
+      </div>
+      <div class="affiliations enter" style="--d:5">
+        <p class="affiliations__label">{pick(copy.affiliations, lang)}</p>
+        <ul>
+          {
+            affiliations.map((a) => (
+              <li>
+                <a href={a.href} rel="noopener">
+                  <Logo name={a.logo} height={1.7} />
+                </a>
+              </li>
+            ))
+          }
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <section class="section now" aria-labelledby="now-title">
+    <div class="wrap">
+      <div class="now__head">
+        <h2 id="now-title" class="reveal">{pick(now.title, lang)}</h2>
+        <Logo name="accenture" height={2} class="now__logo reveal" />
+      </div>
+      <ul class="areas reveal-stagger">
+        {
+          now.areas.map((a, i) => (
+            <li>
+              <span class="areas__rule reveal-rule" aria-hidden="true" />
+              <svg class="glyph" viewBox="0 0 120 72" aria-hidden="true" data-reveal style={`--g:${i}`}>
+                {i === 0 && (
+                  <>
+                    <path class="g-doc g-pop" style="--k:0" d="M90 14h0M100 40h0M90 60h0M108 22h0M78 64h0" />
+                    <path class="g-red g-draw g-loop" style="--k:0" pathLength="1" d="M26 36L62 22" />
+                    <path class="g-red g-draw g-loop" style="--k:1" pathLength="1" d="M26 36L72 36" />
+                    <path class="g-red g-draw g-loop" style="--k:2" pathLength="1" d="M26 36L64 50" />
+                    <path class="g-hit g-pop" style="--k:1" d="M62 22h0M72 36h0M64 50h0" />
+                    <circle class="g-q g-pop" style="--k:0" cx="26" cy="36" r="5" />
+                  </>
+                )}
+                {i === 1 && (
+                  <>
+                    <rect class="g-line g-draw" style="--k:0" pathLength="1" x="30" y="6" width="42" height="60" rx="3" />
+                    <path class="g-line g-draw" style="--k:1" pathLength="1" d="M37 16H63M37 24H66M37 32H58" />
+                    <path class="g-line g-draw" style="--k:2" pathLength="1" d="M39 54c3-6 6 5 9-1s5 4 8 0 4 2 6 0" />
+                    <rect class="g-red g-pop g-snap" style="--k:2" x="35" y="45" width="32" height="16" rx="2" />
+                    <path class="g-red g-draw" style="--k:3" pathLength="1" d="M67 53H86" />
+                    <rect class="g-field g-pop" style="--k:4" x="88" y="46" width="24" height="14" rx="3" />
+                  </>
+                )}
+                {i === 2 && (
+                  <>
+                    <rect class="g-line g-draw" style="--k:0" pathLength="1" x="4" y="26" width="24" height="20" rx="4" />
+                    <rect class="g-line g-draw" style="--k:1" pathLength="1" x="48" y="26" width="24" height="20" rx="4" />
+                    <rect class="g-line g-draw" style="--k:2" pathLength="1" x="92" y="26" width="24" height="20" rx="4" />
+                    <path class="g-line g-draw" style="--k:1" pathLength="1" d="M28 36H48M72 36H92" />
+                    <circle class="g-pulse g-pop" style="--k:3" cx="38" cy="36" r="3.2" />
+                  </>
+                )}
+              </svg>
+              <h3>{pick(a.title, lang)}</h3>
+              <p>{pick(a.body, lang)}</p>
+              <ul class="chips" aria-label={t(lang, 'tools')}>
+                {a.tags.map((tag) => (
+                  <li class="tech-chip">
+                    {tag.logo && <TechLogo name={tag.logo} height={0.95} />}
+                    {pick(tag.name, lang)}
+                  </li>
+                ))}
+              </ul>
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+  </section>
+
+  <section class="section phd" aria-labelledby="phd-title">
+    <div class="wrap phd__grid">
+      <div class="phd__text">
+        <h2 id="phd-title" class="reveal">{pick(copy.selected, lang)}</h2>
+        <ul class="phd__list reveal-stagger" role="list">
+          {
+            selected.map((p) => (
+              <li>
+                <span class="phd__venue num">{p.venue}</span>
+                <a class="list-link phd__title" href={`${route(lang, 'research')}#${slug(p)}`}>
+                  {pick(p.title, lang)}
+                </a>
+              </li>
+            ))
+          }
+        </ul>
+        <p class="more phd__more reveal">
+          <a href={route(lang, 'research')}>{pick(copy.allResearch, lang)}</a>
+          <a href={route(lang, 'talks')}>{t(lang, 'talks.all')}</a>
+        </p>
+      </div>
+      <div class="phd__figure">
+        <WillisGraph lang={lang} />
+      </div>
+    </div>
+  </section>
+
+  <section class="section" aria-labelledby="contact-title">
+    <div class="wrap contact">
+      <Picture
+        src={portrait}
+        formats={['avif', 'webp']}
+        widths={[320, 480, 720]}
+        sizes="(min-width: 48rem) 22rem, 70vw"
+        alt={pick(copy.portraitAlt, lang)}
+        class="contact__portrait reveal-clip"
+        loading="lazy"
+      />
+      <div class="contact__text reveal">
+        <h2 id="contact-title">{pick(copy.contactTitle, lang)}</h2>
+        <p class="contact__email"><a href={`mailto:${person.email}`}>{person.email}</a></p>
+        <div class="actions">
+          <a class="button" href={person.links.linkedin} rel="me noopener">
+            <Icon name="linkedin" class="icon" />
+            LinkedIn
+          </a>
+          <a class="button" href={person.links.github} rel="me noopener">
+            <Icon name="github" class="icon" />
+            GitHub
+          </a>
+          <a class="button" href={person.links.scholar} rel="me noopener">
+            <Icon name="scholar" class="icon" />
+            Google Scholar
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+</Base>
+
+<style>
+  .hero {
+    min-height: calc(100svh - 4rem);
+    display: grid;
+    align-items: center;
+    padding-block: var(--space-l) var(--space-xl);
+    overflow: clip;
+  }
+
+  .hero__grid {
+    display: grid;
+    grid-template-columns: minmax(0, 5.4fr) minmax(0, 6.6fr);
+    grid-template-areas:
+      'text fig'
+      'aff fig';
+    align-content: center;
+    gap: 0 var(--space-l);
+  }
+
+  .hero__text {
+    grid-area: text;
+    align-self: end;
+  }
+
+  .hero__name {
+    font-size: clamp(3.2rem, 1.6rem + 6.4vw, 7rem);
+    line-height: 0.92;
+    letter-spacing: -0.035em;
+  }
+
+  .hero__role {
+    margin-top: var(--space-m);
+    font-family: var(--font-serif);
+    font-size: clamp(1.15rem, 0.9rem + 0.8vw, 1.5rem);
+    line-height: 1.3;
+    color: var(--graphite);
+  }
+
+  .hero__tagline {
+    margin-top: var(--space-m);
+    max-width: 46ch;
+    font-size: var(--step-1);
+    line-height: 1.55;
+  }
+
+  .hero .actions {
+    margin-top: var(--space-l);
+  }
+
+  .affiliations {
+    grid-area: aff;
+    align-self: start;
+    margin-top: var(--space-xl);
+  }
+
+  .affiliations__label {
+    font-size: var(--step--1);
+    color: var(--graphite);
+    margin-bottom: var(--space-s);
+  }
+
+  .affiliations ul {
+    list-style: none;
+    padding: 0;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-s) var(--space-m);
+    color: var(--graphite);
+  }
+
+  .affiliations a {
+    display: inline-flex;
+    padding: 0.35rem 0;
+    min-height: 2.75rem;
+    align-items: center;
+  }
+
+  .hero__figure {
+    grid-area: fig;
+    align-self: center;
+    width: 100%;
+    max-width: 38rem;
+    justify-self: end;
+    margin-right: calc(-1 * var(--gutter));
+  }
+
+  /* What I work on now */
+  .now__head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-m);
+    margin-bottom: var(--space-xl);
+  }
+
+  .now__head :global(.now__logo) {
+    color: var(--graphite);
+    flex: none;
+  }
+
+  .areas {
+    list-style: none;
+    padding: 0;
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: var(--space-l);
+  }
+
+  .areas > li {
+    position: relative;
+    padding-top: var(--space-m);
+  }
+
+  .areas__rule {
+    position: absolute;
+    inset: 0 0 auto 0;
+    height: 2px;
+    background: var(--artery);
+  }
+
+  /*
+   * Area glyphs: small line diagrams that draw in once when they come into
+   * view (data-reveal) and loop only while the area is hovered. Decorative.
+   */
+  .glyph {
+    display: block;
+    width: 120px;
+    height: 72px;
+    margin-bottom: var(--space-s);
+    overflow: visible;
+  }
+
+  .glyph .g-line {
+    fill: none;
+    stroke: var(--graphite);
+    stroke-width: 1.5;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+
+  .glyph .g-red {
+    fill: none;
+    stroke: var(--artery);
+    stroke-width: 1.8;
+    stroke-linecap: round;
+  }
+
+  .glyph .g-doc {
+    fill: none;
+    stroke: color-mix(in srgb, var(--vein) 70%, var(--plate));
+    stroke-width: 7;
+    stroke-linecap: round;
+  }
+
+  .glyph .g-hit {
+    fill: none;
+    stroke: var(--artery);
+    stroke-width: 8;
+    stroke-linecap: round;
+  }
+
+  .glyph .g-q {
+    fill: var(--plate);
+    stroke: var(--artery);
+    stroke-width: 2;
+  }
+
+  .glyph .g-field {
+    fill: color-mix(in srgb, var(--vein) 18%, transparent);
+    stroke: var(--vein);
+    stroke-width: 1.5;
+  }
+
+  .glyph .g-pulse {
+    fill: var(--artery);
+  }
+
+  .glyph .g-pop,
+  .glyph .g-snap {
+    transform-box: fill-box;
+    transform-origin: center;
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    .glyph .g-draw {
+      stroke-dasharray: 1;
+    }
+
+    :global(:root.js) .glyph[data-reveal]:not([data-reveal='in']) .g-draw {
+      stroke-dashoffset: 1;
+    }
+
+    :global(:root.js) .glyph[data-reveal]:not([data-reveal='in']) .g-pop {
+      opacity: 0;
+    }
+
+    :global(:root.js) .glyph[data-reveal=''] :is(.g-draw, .g-pop) {
+      animation: glyph-failsafe 1ms 3s forwards;
+    }
+
+    :global(:root.js) .glyph[data-reveal='in'] .g-draw {
+      animation: glyph-draw 800ms var(--ease-out) both;
+      animation-delay: calc(var(--g) * 120ms + var(--k, 0) * 90ms);
+    }
+
+    :global(:root.js) .glyph[data-reveal='in'] .g-pop {
+      animation: glyph-pop 420ms var(--ease-out) both;
+      animation-delay: calc(var(--g) * 120ms + 450ms + var(--k, 0) * 80ms);
+    }
+
+    @media (hover: hover) {
+      .areas > li:hover .glyph .g-loop {
+        animation: glyph-draw 1400ms var(--ease-out) infinite;
+        animation-delay: calc(var(--k, 0) * 90ms);
+      }
+
+      .areas > li:hover .glyph .g-snap {
+        animation: glyph-snap 1600ms var(--ease-out) infinite;
+      }
+
+      .areas > li:hover .glyph .g-pulse {
+        animation: glyph-travel 1600ms cubic-bezier(0.65, 0, 0.35, 1) infinite;
+      }
+    }
+  }
+
+  @keyframes glyph-draw {
+    from {
+      stroke-dashoffset: 1;
+    }
+    to {
+      stroke-dashoffset: 0;
+    }
+  }
+
+  @keyframes glyph-pop {
+    from {
+      opacity: 0;
+      transform: scale(1.35);
+    }
+  }
+
+  @keyframes glyph-snap {
+    0% {
+      opacity: 0;
+      transform: scale(1.45);
+    }
+    35%,
+    100% {
+      opacity: 1;
+      transform: scale(1);
+    }
+  }
+
+  @keyframes glyph-travel {
+    0% {
+      transform: translateX(-10px);
+      opacity: 0;
+    }
+    12% {
+      opacity: 1;
+    }
+    88% {
+      transform: translateX(54px);
+      opacity: 1;
+    }
+    100% {
+      transform: translateX(54px);
+      opacity: 0;
+    }
+  }
+
+  @keyframes glyph-failsafe {
+    to {
+      opacity: 1;
+      stroke-dashoffset: 0;
+    }
+  }
+
+  .areas h3 {
+    font-size: var(--step-2);
+    margin-bottom: var(--space-s);
+  }
+
+  .areas p {
+    color: var(--graphite);
+    max-width: 36ch;
+  }
+
+  .chips {
+    list-style: none;
+    padding: 0;
+    margin-top: var(--space-m);
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+  }
+
+  .chips li {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    padding: 0.15rem 0.6rem;
+    border: 1px solid var(--rule);
+    border-radius: 999px;
+    font-size: 0.8125rem;
+    color: var(--graphite);
+  }
+
+  /* From my PhD: a plain list next to the Willis graph */
+  .phd__grid {
+    display: grid;
+    grid-template-columns: minmax(0, 22rem) minmax(0, 1fr);
+    grid-template-areas: 'fig text';
+    gap: var(--space-xl);
+    align-items: center;
+  }
+
+  .phd__text {
+    grid-area: text;
+  }
+
+  .phd__figure {
+    grid-area: fig;
+  }
+
+  .phd__list {
+    list-style: none;
+    padding: 0;
+    margin-top: var(--space-l);
+    max-width: 40rem;
+  }
+
+  .phd__list li {
+    display: grid;
+    gap: 0.1rem;
+    padding-block: var(--space-s);
+    border-top: 1px solid var(--rule);
+  }
+
+  .phd__list li:last-child {
+    border-bottom: 1px solid var(--rule);
+  }
+
+  .phd__venue {
+    font-size: var(--step--1);
+    font-weight: 600;
+    color: var(--graphite);
+  }
+
+  .phd__title {
+    font-family: var(--font-serif);
+    font-size: var(--step-1);
+    font-weight: 600;
+    line-height: 1.3;
+    text-decoration-color: transparent;
+    justify-self: start;
+  }
+
+  @media (hover: hover) {
+    .phd__title:hover {
+      text-decoration-color: var(--artery);
+    }
+  }
+
+  .phd__more {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2xs) var(--space-l);
+  }
+
+  .more {
+    margin-top: var(--space-l);
+    font-weight: 600;
+  }
+
+  /* Contact */
+  .contact {
+    display: grid;
+    grid-template-columns: minmax(0, 22rem) minmax(0, 1fr);
+    gap: var(--space-xl);
+    align-items: center;
+  }
+
+  .contact :global(.contact__portrait) {
+    width: 100%;
+    aspect-ratio: 4 / 5;
+    object-fit: cover;
+    border-radius: var(--radius);
+  }
+
+  .contact__text h2 {
+    font-size: var(--step-4);
+    letter-spacing: -0.03em;
+  }
+
+  .contact__text p {
+    margin-top: var(--space-m);
+    font-size: var(--step-1);
+  }
+
+  .contact__email {
+    font-family: var(--font-serif);
+    font-size: var(--step-2) !important;
+    overflow-wrap: anywhere;
+  }
+
+  .contact .actions {
+    margin-top: var(--space-l);
+  }
+
+  @media (max-width: 60rem) {
+    .areas {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  @media (max-width: 52rem) {
+    .hero {
+      min-height: 0;
+      padding-top: var(--space-l);
+    }
+
+    .hero__grid {
+      grid-template-columns: minmax(0, 1fr);
+      grid-template-areas:
+        'text'
+        'fig'
+        'aff';
+    }
+
+    /* Text and buttons first, then the scene full-bleed, then the logos. */
+    .hero__figure {
+      justify-self: stretch;
+      max-width: none;
+      width: auto;
+      margin: var(--space-l) calc(-1 * var(--gutter)) 0;
+    }
+
+    .hero__figure :global(figcaption) {
+      padding-left: var(--gutter);
+      padding-right: calc(var(--gutter) + 3.5rem);
+    }
+
+    .hero__figure :global(.scene-pause) {
+      right: var(--gutter);
+    }
+
+    .affiliations {
+      margin-top: var(--space-l);
+    }
+
+    /* From my PhD: list first, then the figure. */
+    .phd__grid {
+      grid-template-columns: minmax(0, 1fr);
+      grid-template-areas:
+        'text'
+        'fig';
+      gap: var(--space-l);
+    }
+
+    .phd__figure {
+      width: 100%;
+      max-width: 22rem;
+      justify-self: center;
+    }
+
+    .contact {
+      grid-template-columns: 1fr;
+    }
+
+    .contact :global(.contact__portrait) {
+      max-width: 18rem;
+    }
+  }
+
+  /* Phones: CTA rows fill evenly; logos in a 3 + 2 grid (no orphans). */
+  @media (max-width: 40rem) {
+    .hero .actions .button {
+      flex: 1 1 auto;
+      justify-content: center;
+    }
+
+    .affiliations ul {
+      display: grid;
+      grid-template-columns: repeat(3, max-content);
+      justify-content: space-between;
+      column-gap: var(--space-l);
+    }
+  }
+
+  /* Tablets: the scene stays centred and does not fill the whole width. */
+  @media (min-width: 40.01rem) and (max-width: 52rem) {
+    .hero__figure {
+      justify-self: center;
+      width: 100%;
+      max-width: 36rem;
+      margin-inline: auto;
+    }
+
+    .hero__figure :global(figcaption) {
+      padding-left: 0;
+      padding-right: 3.5rem;
+    }
+
+    .hero__figure :global(.scene-pause) {
+      right: 0;
+    }
+  }
+</style>

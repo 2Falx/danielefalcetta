@@ -1,0 +1,475 @@
+---
+/**
+ * The Circle of Willis as a 3D graph. Rendered statically on the server at the
+ * rest view; a small client script then sways it gently, follows the pointer
+ * and can be dragged. It draws itself in the first time it scrolls into view.
+ * The sway and the blood-flow highlights can be paused (WCAG 2.2.2).
+ * Reduced motion: static, no pause button, drag still works.
+ * Use it at most once per page (the script looks up a single instance).
+ */
+import type { Lang } from '../i18n/ui';
+import { t } from '../i18n/ui';
+import { edgePath, edges, labels, nodes, project, restView } from '../lib/willis';
+import ScenePause from './ScenePause.astro';
+
+interface Props {
+  lang: Lang;
+}
+
+const { lang } = Astro.props;
+const v = restView;
+---
+
+<div class="scene willis-scene" data-willis-scene>
+<figure class="willis" data-willis>
+  <div class="willis__stage">
+    <svg
+      viewBox="-45 -2 490 452"
+      role="img"
+      aria-labelledby="willis-title willis-desc"
+      class="willis__svg"
+    >
+      <title id="willis-title">{t(lang, 'fig.title')}</title>
+      <desc id="willis-desc">{t(lang, 'fig.desc')}</desc>
+
+      <g class="willis__edges" fill="none" stroke-linecap="round" stroke-linejoin="round">
+        {
+          edges.map((e) => {
+            const { d, k } = edgePath(e, v);
+            return (
+              <path
+                d={d}
+                pathLength="1"
+                data-edge={e.id}
+                stroke-width={(e.w * k).toFixed(2)}
+                class:list={['willis__edge', { 'willis__edge--variable': e.variable }]}
+                style={`--wave:${e.wave}`}
+              />
+            );
+          })
+        }
+      </g>
+
+      <g class="willis__shines" fill="none" stroke-linecap="round" aria-hidden="true">
+        {
+          edges
+            .filter((e) => !e.variable)
+            .map((e) => {
+              const { d, k } = edgePath(e, v);
+              return (
+                <path
+                  d={d}
+                  pathLength="1"
+                  data-shine={e.id}
+                  stroke-width={(e.w * k * 0.34).toFixed(2)}
+                  class="willis__shine"
+                  style={`--wave:${e.wave}`}
+                />
+              );
+            })
+        }
+      </g>
+
+      <g class="willis__flows" fill="none" stroke-linecap="round" aria-hidden="true">
+        {
+          edges
+            .filter((e) => !e.variable)
+            .map((e, i) => {
+              const { d, k } = edgePath(e, v);
+              return (
+                <path
+                  d={d}
+                  pathLength="1"
+                  data-flow={e.id}
+                  stroke-width={(e.w * k * 0.55).toFixed(2)}
+                  class="willis__flow"
+                  style={`--wave:${e.wave};--speed:${(2.6 - e.w * 0.18).toFixed(2)}s;--phase:${(i * 0.37) % 1}`}
+                />
+              );
+            })
+        }
+      </g>
+
+      <g class="willis__nodes">
+        {
+          nodes.map((n, i) => {
+            const [x, y, k] = project(n, v);
+            return <circle data-node={i} cx={x.toFixed(1)} cy={y.toFixed(1)} r={(4.4 * k).toFixed(2)} style={`--i:${i}`} />;
+          })
+        }
+      </g>
+
+      <g class="willis__labels" aria-hidden="true">
+        {
+          labels.map((l, i) => {
+            const [x, y] = project(l.at, v);
+            const tx = x + l.dx;
+            const ty = y + l.dy;
+            return (
+              <g data-label={i}>
+                <line x1={x.toFixed(1)} y1={y.toFixed(1)} x2={tx.toFixed(1)} y2={ty.toFixed(1)} />
+                <text
+                  x={(tx + (l.anchor === 'end' ? -5 : l.anchor === 'start' ? 5 : 0)).toFixed(1)}
+                  y={(ty + (l.anchor === 'middle' ? -6 : 4)).toFixed(1)}
+                  text-anchor={l.anchor}
+                >
+                  {l.text}
+                </text>
+              </g>
+            );
+          })
+        }
+      </g>
+    </svg>
+  </div>
+  <figcaption>{t(lang, 'fig.caption')}</figcaption>
+</figure>
+<ScenePause lang={lang} />
+</div>
+
+<script>
+  import { edgePath, edges, labels, nodes, project, restView, type View } from '../lib/willis';
+  import { bindScenePause } from '../lib/scene-pause';
+
+  // One Willis graph per page (Home or Research), so a single querySelector is enough.
+  const scene = document.querySelector<HTMLElement>('[data-willis-scene]');
+  const fig = scene?.querySelector<HTMLElement>('[data-willis]');
+  const svg = fig?.querySelector('svg');
+
+  if (scene && fig && svg) {
+    const reduce = window.matchMedia('(prefers-reduced-motion: reduce)');
+    const finePointer = window.matchMedia('(hover: hover) and (pointer: fine)');
+    const edgeEls = edges.map((e) => svg.querySelector<SVGPathElement>(`[data-edge="${e.id}"]`)!);
+    const shineEls = edges.map((e) => svg.querySelector<SVGPathElement>(`[data-shine="${e.id}"]`));
+    const flowEls = edges.map((e) => svg.querySelector<SVGPathElement>(`[data-flow="${e.id}"]`));
+    const nodeEls = nodes.map((_, i) => svg.querySelector<SVGCircleElement>(`[data-node="${i}"]`)!);
+    const labelEls = labels.map((_, i) => {
+      const g = svg.querySelector<SVGGElement>(`[data-label="${i}"]`)!;
+      return { line: g.querySelector('line')!, text: g.querySelector('text')! };
+    });
+
+    const view: View = { ...restView };
+    const target = { yaw: 0, pitch: restView.pitch };
+    let dragYaw = 0;
+    let dragging: { x: number; y: number; yaw: number; pitch: number } | null = null;
+    let visible = false;
+    let raf = 0;
+    // Sway clock: advances only while the scene plays, so pausing freezes it
+    // and playing resumes from the same pose instead of jumping.
+    let clock = 0;
+    let last = 0;
+    const sway = () => Math.sin(clock * 0.42) * 0.38;
+
+    const pause = bindScenePause(scene, (paused) => {
+      if (paused) {
+        // Stop where it is.
+        target.yaw = view.yaw;
+        dragYaw = view.yaw - sway();
+      }
+      wake();
+    });
+    const still = () => reduce.matches || pause.paused;
+
+    const render = () => {
+      edges.forEach((e, i) => {
+        const { d, k } = edgePath(e, view);
+        edgeEls[i].setAttribute('d', d);
+        edgeEls[i].setAttribute('stroke-width', (e.w * k).toFixed(2));
+        edgeEls[i].style.opacity = String(Math.min(1, Math.max(0.5, (k - 0.7) * 2.2)));
+        const flow = flowEls[i];
+        if (flow) {
+          flow.setAttribute('d', d);
+          flow.setAttribute('stroke-width', (e.w * k * 0.55).toFixed(2));
+        }
+        const shine = shineEls[i];
+        if (shine) {
+          shine.setAttribute('d', d);
+          shine.setAttribute('stroke-width', (e.w * k * 0.34).toFixed(2));
+        }
+      });
+      nodes.forEach((n, i) => {
+        const [x, y, k] = project(n, view);
+        nodeEls[i].setAttribute('cx', x.toFixed(1));
+        nodeEls[i].setAttribute('cy', y.toFixed(1));
+        nodeEls[i].setAttribute('r', (4.4 * k).toFixed(2));
+      });
+      labels.forEach((l, i) => {
+        const [x, y] = project(l.at, view);
+        const tx = x + l.dx;
+        const ty = y + l.dy;
+        const { line, text } = labelEls[i];
+        line.setAttribute('x1', x.toFixed(1));
+        line.setAttribute('y1', y.toFixed(1));
+        line.setAttribute('x2', tx.toFixed(1));
+        line.setAttribute('y2', ty.toFixed(1));
+        text.setAttribute('x', (tx + (l.anchor === 'end' ? -5 : l.anchor === 'start' ? 5 : 0)).toFixed(1));
+        text.setAttribute('y', (ty + (l.anchor === 'middle' ? -6 : 4)).toFixed(1));
+      });
+    };
+
+    const tick = (now: number) => {
+      raf = 0;
+      const dt = last ? Math.min(64, now - last) : 0;
+      last = now;
+      if (!dragging && !still()) {
+        // A slow, small sway so the structure reads as 3D without spinning.
+        clock += dt / 1000;
+        target.yaw = dragYaw + sway();
+      }
+      view.yaw += (target.yaw - view.yaw) * 0.08;
+      view.pitch += (target.pitch - view.pitch) * 0.08;
+      render();
+      const settled = Math.abs(target.yaw - view.yaw) < 0.0005 && Math.abs(target.pitch - view.pitch) < 0.0005;
+      if (visible && (!still() || dragging || !settled)) raf = requestAnimationFrame(tick);
+      else last = 0;
+    };
+
+    function wake() {
+      if (!raf && visible) raf = requestAnimationFrame(tick);
+    }
+
+    // rAF only while the figure is on screen and the tab is visible. The
+    // draw-in starts the first time 30% of the figure is in view.
+    let onScreen = false;
+    new IntersectionObserver(
+      ([entry]) => {
+        onScreen = entry.isIntersecting;
+        visible = onScreen && document.visibilityState === 'visible';
+        if (entry.intersectionRatio >= 0.3) fig.dataset.inview = '';
+        wake();
+      },
+      { threshold: [0, 0.3] },
+    ).observe(fig);
+
+    document.addEventListener('visibilitychange', () => {
+      visible = onScreen && document.visibilityState === 'visible';
+      wake();
+    });
+
+    const stage = fig.querySelector<HTMLElement>('.willis__stage')!;
+
+    stage.addEventListener('pointermove', (ev) => {
+      if (dragging) {
+        target.yaw = dragging.yaw + (ev.clientX - dragging.x) * 0.008;
+        target.pitch = Math.min(1.35, Math.max(0.35, dragging.pitch + (ev.clientY - dragging.y) * 0.006));
+        wake();
+      } else if (finePointer.matches && !still()) {
+        const rect = stage.getBoundingClientRect();
+        const ny = (ev.clientY - rect.top) / rect.height - 0.5;
+        target.pitch = restView.pitch + ny * 0.3;
+        wake();
+      }
+    });
+
+    stage.addEventListener('pointerleave', () => {
+      if (!dragging && !still()) target.pitch = restView.pitch;
+      wake();
+    });
+
+    stage.addEventListener('pointerdown', (ev) => {
+      dragging = { x: ev.clientX, y: ev.clientY, yaw: view.yaw, pitch: view.pitch };
+      stage.setPointerCapture(ev.pointerId);
+      stage.classList.add('is-dragging');
+      wake();
+    });
+
+    const endDrag = () => {
+      if (!dragging) return;
+      dragYaw = target.yaw - sway();
+      dragging = null;
+      stage.classList.remove('is-dragging');
+      wake();
+    };
+    stage.addEventListener('pointerup', endDrag);
+    stage.addEventListener('pointercancel', endDrag);
+  }
+</script>
+
+<style>
+  .willis {
+    margin: 0;
+    container-type: inline-size;
+  }
+
+  .willis__stage {
+    cursor: grab;
+    touch-action: pan-y;
+    user-select: none;
+    -webkit-user-select: none;
+  }
+
+  .willis__stage.is-dragging {
+    cursor: grabbing;
+  }
+
+  .willis__svg {
+    width: 100%;
+    height: auto;
+    overflow: visible;
+  }
+
+  .willis__edge {
+    stroke: var(--artery);
+    stroke-dasharray: 1;
+    stroke-dashoffset: 0;
+  }
+
+  .willis__edge--variable {
+    stroke-dasharray: 0.06 0.045;
+  }
+
+  .willis__shine {
+    stroke: color-mix(in srgb, var(--artery) 45%, #fff);
+    opacity: 0.75;
+    stroke-dasharray: 1;
+    stroke-dashoffset: 0;
+    transform: translate(-0.6px, -0.6px);
+  }
+
+  .willis__flow {
+    stroke: color-mix(in srgb, var(--artery) 30%, #fff);
+    stroke-dasharray: 0.035 0.3;
+    opacity: 0;
+  }
+
+  :global(:root[data-theme='dark']) .willis__flows {
+    filter: drop-shadow(0 0 2.5px var(--artery));
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :global(:root:not([data-theme='light'])) .willis__flows {
+      filter: drop-shadow(0 0 2.5px var(--artery));
+    }
+  }
+
+  .willis__nodes circle {
+    fill: var(--ink);
+    stroke: var(--plate);
+    stroke-width: 2;
+  }
+
+  .willis__labels line {
+    stroke: var(--graphite);
+    stroke-width: 0.8;
+  }
+
+  .willis__labels text {
+    fill: var(--graphite);
+    font-family: var(--font-sans);
+    font-size: 12.5px;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+  }
+
+  figcaption {
+    margin-top: var(--space-s);
+    max-width: 44ch;
+    padding-right: 3.5rem;
+    color: var(--graphite);
+    font-size: var(--step--1);
+    line-height: 1.5;
+  }
+
+  /* Small figures: keep the labels legible (about 11px on screen). */
+  @container (max-width: 30rem) {
+    .willis__labels text {
+      font-size: 16px;
+    }
+  }
+
+  @container (max-width: 20rem) {
+    .willis__labels {
+      display: none;
+    }
+  }
+
+  /*
+   * Draw-in: without JavaScript it plays once on load; with JavaScript it
+   * waits until the figure is in view ([data-inview], set by the script).
+   * The looping blood flow runs only with JavaScript, because only then can
+   * it be paused.
+   */
+  @media (prefers-reduced-motion: no-preference) {
+    .willis__edge:not(.willis__edge--variable),
+    .willis__shine {
+      stroke-dashoffset: 1;
+    }
+
+    .willis__edge--variable,
+    .willis__nodes circle,
+    .willis__labels {
+      opacity: 0;
+    }
+
+    :global(:root:not(.js)) .willis .willis__edge:not(.willis__edge--variable),
+    :global(:root:not(.js)) .willis .willis__shine,
+    .willis[data-inview] .willis__edge:not(.willis__edge--variable),
+    .willis[data-inview] .willis__shine {
+      animation: draw 1000ms var(--ease-out) forwards;
+      animation-delay: calc(150ms + var(--wave) * 380ms);
+    }
+
+    :global(:root:not(.js)) .willis .willis__edge--variable,
+    .willis[data-inview] .willis__edge--variable {
+      animation: appear 500ms ease-out forwards;
+      animation-delay: calc(450ms + var(--wave) * 380ms);
+    }
+
+    :global(:root:not(.js)) .willis .willis__nodes circle,
+    .willis[data-inview] .willis__nodes circle {
+      animation: appear 400ms ease-out forwards;
+      animation-delay: calc(1050ms + var(--i) * 40ms);
+    }
+
+    :global(:root:not(.js)) .willis .willis__labels,
+    .willis[data-inview] .willis__labels {
+      animation: appear 600ms ease-out 1450ms forwards;
+    }
+
+    :global(:root.js) .willis[data-inview] .willis__flow {
+      animation:
+        appear 600ms ease-out forwards,
+        flow var(--speed) linear infinite;
+      animation-delay:
+        calc(1700ms + var(--wave) * 250ms),
+        calc(var(--phase) * -3s);
+    }
+
+    :global(:root.js) .willis-scene[data-paused] .willis[data-inview] .willis__flow {
+      animation-play-state: paused;
+    }
+
+    /* Caption and pause button fade in with the graph, never before it. */
+    :global(:root.js) .willis figcaption,
+    :global(:root.js) .willis-scene :global(.scene-pause) {
+      opacity: 0;
+      transition: opacity 600ms var(--ease-out) 1450ms;
+    }
+
+    :global(:root.js) .willis[data-inview] figcaption,
+    :global(:root.js) .willis-scene:has(.willis[data-inview]) :global(.scene-pause) {
+      opacity: 1;
+    }
+  }
+
+  @keyframes flow {
+    from {
+      stroke-dashoffset: 0;
+    }
+    to {
+      stroke-dashoffset: -1.34;
+    }
+  }
+
+  @keyframes draw {
+    to {
+      stroke-dashoffset: 0;
+    }
+  }
+
+  @keyframes appear {
+    to {
+      opacity: 1;
+    }
+  }
+</style>

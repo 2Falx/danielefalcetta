@@ -1,0 +1,82 @@
+{
+ "python": {
+  "title": "Python",
+  "hex": "#3776AB"
+ },
+ "pytorch": {
+  "title": "PyTorch",
+  "hex": "#EE4C2C"
+ },
+ "tensorflow": {
+  "title": "TensorFlow",
+  "hex": "#FF6F00"
+ },
+ "scikitlearn": {
+  "title": "scikit-learn",
+  "hex": "#F7931E"
+ },
+ "numpy": {
+  "title": "NumPy",
+  "hex": "#013243"
+ },
+ "pandas": {
+  "title": "pandas",
+  "hex": "#150458"
+ },
+ "fastapi": {
+  "title": "FastAPI",
+  "hex": "#009688"
+ },
+ "pydantic": {
+  "title": "Pydantic",
+  "hex": "#E92063"
+ },
+ "postgresql": {
+  "title": "PostgreSQL",
+  "hex": "#4169E1"
+ },
+ "docker": {
+  "title": "Docker",
+  "hex": "#2496ED"
+ },
+ "terraform": {
+  "title": "Terraform",
+  "hex": "#844FBA"
+ },
+ "mlflow": {
+  "title": "MLflow",
+  "hex": "#0194E2"
+ },
+ "databricks": {
+  "title": "Databricks",
+  "hex": "#FF3621"
+ },
+ "googlecloud": {
+  "title": "Google Cloud",
+  "hex": "#4285F4"
+ },
+ "googlegemini": {
+  "title": "Google Gemini",
+  "hex": "#8E75B2"
+ },
+ "weightsandbiases": {
+  "title": "Weights & Biases",
+  "hex": "#FFBE00"
+ },
+ "git": {
+  "title": "Git",
+  "hex": "#F03C2E"
+ },
+ "linux": {
+  "title": "Linux",
+  "hex": "#FCC624"
+ },
+ "gnubash": {
+  "title": "GNU Bash",
+  "hex": "#4EAA25"
+ },
+ "latex": {
+  "title": "LaTeX",
+  "hex": "#008080"
+ }
+}

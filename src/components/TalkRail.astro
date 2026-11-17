@@ -1,0 +1,681 @@
+---
+/**
+ * Talk cards with local cover images (src/assets/talks/{slug}.jpg, made by
+ * scripts/make_talk_covers.py). No request goes to Google until the visitor
+ * acts: the title opens the deck on Google Slides in a new tab; with
+ * `preview`, a button opens the preview dialog of the Talks page, which loads
+ * the embed only after a second, explicit click.
+ *
+ * variant 'rail': one scrolling row with snap (Research page).
+ * variant 'grid': 3 / 2 / 1 columns (Talks page).
+ */
+import { Image, getImage } from 'astro:assets';
+import type { ImageMetadata } from 'astro';
+import { type Lang, pick, t } from '../i18n/ui';
+import { type Talk, embedUrl, pubUrl } from '../data/talks';
+
+interface Props {
+  talks: Talk[];
+  lang: Lang;
+  variant: 'rail' | 'grid';
+  preview?: boolean;
+  /** Heading level of the card titles. */
+  level?: 2 | 3;
+}
+
+const { talks, lang, variant, preview = false, level = 3 } = Astro.props;
+const H = level === 2 ? 'h2' : 'h3';
+
+const files = import.meta.glob<ImageMetadata>('../assets/talks/*.jpg', { eager: true, import: 'default' });
+const coverOf = (slug: string) => files[`../assets/talks/${slug}.jpg`];
+
+// Large poster for the preview dialog (same origin, WebP).
+const posters = new Map<string, string>();
+if (preview) {
+  for (const talk of talks) {
+    const c = coverOf(talk.slug);
+    if (c) posters.set(talk.slug, (await getImage({ src: c, width: 1200, format: 'webp' })).src);
+  }
+}
+const railId = `rail-${variant}`;
+// One hidden "(opens in a new tab)" per list, referenced with aria-describedby,
+// so headings and link names stay clean.
+const extId = `${railId}-ext`;
+const railSizes = '(min-width: 60rem) 20rem, 78vw';
+const gridSizes = '(min-width: 64rem) 22rem, (min-width: 40rem) 45vw, calc(100vw - 2.5rem)';
+---
+
+<div class:list={['talks', `talks--${variant}`]} data-talks={variant}>
+  {
+    variant === 'rail' && (
+      <div class="talks__nav" hidden data-rail-nav>
+        <button type="button" class="talks__arrow" aria-controls={railId} data-dir="-1" aria-label={t(lang, 'talks.prev')}>
+          <svg viewBox="0 0 16 16" aria-hidden="true">
+            <path d="M10 3 5 8l5 5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" />
+          </svg>
+        </button>
+        <button type="button" class="talks__arrow" aria-controls={railId} data-dir="1" aria-label={t(lang, 'talks.next')}>
+          <svg viewBox="0 0 16 16" aria-hidden="true">
+            <path d="m6 3 5 5-5 5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" />
+          </svg>
+        </button>
+      </div>
+    )
+  }
+  <ul class="talks__list" id={railId} role="list" data-reveal={variant === 'rail' ? '' : undefined}>
+    {
+      talks.map((talk, i) => {
+        const title = pick(talk.title, lang);
+        const cover = coverOf(talk.slug);
+        const sheets = talk.decks ? [1, 2, 3].map((n) => coverOf(`${talk.slug}-${n}`)) : [];
+        const hasSheets = sheets.length > 0 && sheets.every(Boolean);
+        return (
+          <li
+            class:list={['talk', { 'talk--group': !!talk.decks }]}
+            style={`--i:${variant === 'grid' ? i % 3 : i}`}
+            data-reveal={variant === 'grid' ? '' : undefined}
+          >
+            <div class="talk__card" data-tilt={talk.decks ? undefined : ''}>
+              {talk.decks ? (
+                <span class="talk__plate talk__plate--stack" aria-hidden="true">
+                  {hasSheets
+                    ? sheets.map((c, n) => (
+                        <Image
+                          class="talk__sheet"
+                          src={c!}
+                          alt=""
+                          widths={[360, 720]}
+                          sizes="(min-width: 60rem) 14rem, 55vw"
+                          loading="lazy"
+                          style={`--n:${n - 1}`}
+                        />
+                      ))
+                    : [0, 1, 2].map((n) => (
+                        <span class="talk__sheet talk__sheet--plain" style={`--n:${n - 1}`}>
+                          {n === 1 && <span class="talk__sheet-years num">{talk.year}</span>}
+                        </span>
+                      ))}
+                </span>
+              ) : (
+                <span class="talk__plate">
+                  {cover ? (
+                    <Image
+                      src={cover}
+                      alt=""
+                      widths={[360, 720, 1080]}
+                      sizes={variant === 'grid' ? gridSizes : railSizes}
+                      loading={variant === 'grid' && i === 0 ? 'eager' : 'lazy'}
+                      fetchpriority={variant === 'grid' && i === 0 ? 'high' : undefined}
+                    />
+                  ) : (
+                    /* No cover: a neutral sketch of a title slide (the title is in the heading below). */
+                    <span class="talk__plate-sketch" aria-hidden="true">
+                      <svg class="talk__sketch" viewBox="0 0 160 90">
+                        <rect class="talk__sketch-frame" x="1" y="1" width="158" height="88" rx="6" />
+                        <path class="talk__sketch-title" d="M20 30h78M20 41h56" />
+                        <path class="talk__sketch-accent" d="M20 52h22" />
+                        <path class="talk__sketch-text" d="M20 70h40M104 70h36" />
+                      </svg>
+                    </span>
+                  )}
+                </span>
+              )}
+              <div class="talk__body">
+                <p class="talk__meta num">
+                  {talk.year} · {pick(talk.where, lang)}
+                </p>
+                {talk.deck ? (
+                  <H class="talk__title">
+                    <a class="stretched" href={pubUrl(talk.deck)} target="_blank" rel="noopener" aria-describedby={extId}>
+                      {title}
+                    </a>
+                  </H>
+                ) : (
+                  <H class="talk__title">{title}</H>
+                )}
+                {preview && talk.deck && (
+                  <button
+                    type="button"
+                    class="talk__preview"
+                    aria-haspopup="dialog"
+                    data-preview
+                    data-embed={embedUrl(talk.deck)}
+                    data-pub={pubUrl(talk.deck)}
+                    data-title={title}
+                    data-poster={posters.get(talk.slug) ?? ''}
+                  >
+                    <svg viewBox="0 0 16 16" aria-hidden="true">
+                      <rect x="1.5" y="3" width="13" height="9" rx="1.5" fill="none" stroke="currentColor" stroke-width="1.5" />
+                      <path d="M6.5 5.6v3.8L10 7.5z" fill="currentColor" />
+                    </svg>
+                    {t(lang, 'slides.preview')}
+                    <span class="visually-hidden">: {title}</span>
+                  </button>
+                )}
+                {talk.decks && (
+                  <details class="talk__more disclosure">
+                    <summary>
+                      {t(lang, 'talks.allDecks')}
+                      <span class="visually-hidden">: {title}</span>
+                      <svg class="chev" viewBox="0 0 16 16" aria-hidden="true">
+                        <path d="m4 6 4 4 4-4" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" />
+                      </svg>
+                    </summary>
+                    <ul class="talk__decks" role="list">
+                      {talk.decks.map((d, n) => (
+                        <li style={`--i:${n}`}>
+                          <a class="list-link" href={pubUrl(d.deck)} target="_blank" rel="noopener" aria-describedby={extId}>
+                            {pick(d.title, lang)}
+                          </a>
+                          <span class="talk__deck-year num">{d.year}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  </details>
+                )}
+              </div>
+            </div>
+          </li>
+        );
+      })
+    }
+  </ul>
+  <span id={extId} hidden>{t(lang, 'external')}</span>
+</div>
+
+<script>
+  const reduce = window.matchMedia('(prefers-reduced-motion: reduce)');
+  const fine = window.matchMedia('(hover: hover) and (pointer: fine)');
+
+  // Rail: prev/next buttons on fine pointers, disabled at the ends; the edge
+  // fade is dropped once the end is reached.
+  document.querySelectorAll<HTMLElement>('[data-talks="rail"]').forEach((root) => {
+    const list = root.querySelector<HTMLElement>('.talks__list')!;
+    const nav = root.querySelector<HTMLElement>('[data-rail-nav]');
+    const arrows = [...root.querySelectorAll<HTMLButtonElement>('.talks__arrow')];
+    const sync = () => {
+      const max = list.scrollWidth - list.clientWidth - 2;
+      arrows[0].disabled = list.scrollLeft <= 2;
+      arrows[1].disabled = list.scrollLeft >= max;
+      list.toggleAttribute('data-at-end', list.scrollLeft >= max);
+    };
+    if (nav && fine.matches) nav.hidden = false;
+    arrows.forEach((b) =>
+      b.addEventListener('click', () => {
+        const card = list.querySelector<HTMLElement>('.talk');
+        const step = card ? card.getBoundingClientRect().width + parseFloat(getComputedStyle(list).columnGap || '0') : 300;
+        list.scrollBy({ left: Number(b.dataset.dir) * step * 2, behavior: reduce.matches ? 'auto' : 'smooth' });
+      }),
+    );
+    list.addEventListener('scroll', sync, { passive: true });
+    window.addEventListener('resize', sync);
+    sync();
+  });
+
+  // Fine-pointer tilt (no reduced motion): the card leans toward the pointer.
+  document.querySelectorAll<HTMLElement>('[data-tilt]').forEach((card) => {
+    let raf = 0;
+    let nx = 0;
+    let ny = 0;
+    const apply = () => {
+      raf = 0;
+      card.style.transform = `perspective(900px) rotateX(${(-ny * 8).toFixed(2)}deg) rotateY(${(nx * 12).toFixed(2)}deg)`;
+    };
+    card.addEventListener('pointermove', (e) => {
+      if (!fine.matches || reduce.matches) return;
+      const r = card.getBoundingClientRect();
+      nx = (e.clientX - r.left) / r.width - 0.5;
+      ny = (e.clientY - r.top) / r.height - 0.5;
+      card.classList.add('is-tilting');
+      if (!raf) raf = requestAnimationFrame(apply);
+    });
+    card.addEventListener('pointerleave', () => {
+      if (raf) cancelAnimationFrame(raf);
+      raf = 0;
+      card.classList.remove('is-tilting');
+      card.style.transform = '';
+    });
+  });
+</script>
+
+<style>
+  .talks {
+    position: relative;
+  }
+
+  .talks__list {
+    list-style: none;
+    padding: 0;
+  }
+
+  /* Rail: one row, snap, bleeds to the screen edges on small screens. */
+  .talks--rail .talks__list {
+    display: grid;
+    grid-auto-flow: column;
+    grid-auto-columns: min(78vw, 20rem);
+    gap: var(--space-m);
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    scroll-padding-inline: var(--gutter);
+    overscroll-behavior-x: contain;
+    margin-inline: calc(-1 * var(--gutter));
+    padding: var(--space-xs) var(--gutter) var(--space-m);
+    scrollbar-width: thin;
+    -webkit-mask-image: linear-gradient(90deg, #000 calc(100% - 4rem), transparent);
+    mask-image: linear-gradient(90deg, #000 calc(100% - 4rem), transparent);
+  }
+
+  .talks--rail .talks__list[data-at-end] {
+    -webkit-mask-image: none;
+    mask-image: none;
+  }
+
+  .talks--rail .talk {
+    scroll-snap-align: start;
+  }
+
+  .talks__nav {
+    position: absolute;
+    right: 0;
+    bottom: calc(100% + var(--space-l));
+    display: flex;
+    gap: var(--space-xs);
+  }
+
+  .talks__nav[hidden] {
+    display: none;
+  }
+
+  .talks__arrow {
+    display: inline-grid;
+    place-items: center;
+    width: 44px;
+    height: 44px;
+    border: 1px solid var(--rule);
+    border-radius: 999px;
+    background: var(--surface);
+    color: var(--ink);
+    cursor: pointer;
+    transition:
+      border-color 160ms ease,
+      opacity 160ms ease;
+  }
+
+  .talks__arrow svg {
+    width: 16px;
+    height: 16px;
+  }
+
+  .talks__arrow:disabled {
+    opacity: 0.4;
+    cursor: default;
+  }
+
+  @media (hover: hover) {
+    .talks__arrow:not(:disabled):hover {
+      border-color: var(--ink);
+    }
+  }
+
+  /* Grid: 3 / 2 / 1 columns. */
+  .talks--grid .talks__list {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: var(--space-l) var(--space-m);
+  }
+
+  @media (max-width: 60rem) {
+    .talks--grid .talks__list {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+
+  @media (max-width: 40rem) {
+    .talks--grid .talks__list {
+      grid-template-columns: minmax(0, 1fr);
+    }
+  }
+
+  /* Card */
+  .talk__card {
+    position: relative;
+    display: grid;
+    gap: var(--space-s);
+    height: 100%;
+    transform-origin: center;
+    transition: transform 300ms var(--ease-out);
+  }
+
+  .talk__card.is-tilting {
+    transition: none;
+  }
+
+  .talk__card:active {
+    transform: scale(0.98);
+  }
+
+  .talk__plate {
+    position: relative;
+    display: grid;
+    place-items: center;
+    aspect-ratio: 16 / 9;
+    overflow: hidden;
+    border: 1px solid var(--rule);
+    border-radius: var(--radius);
+    background: var(--surface);
+  }
+
+  /* Shadow lives on a pseudo-element behind the plate and only fades, so the tilt stays cheap. */
+  .talk__card::before {
+    content: '';
+    position: absolute;
+    inset: 0 0 auto 0;
+    aspect-ratio: 16 / 9;
+    border-radius: var(--radius);
+    box-shadow: 0 18px 40px -18px rgb(19 33 60 / 0.45);
+    opacity: 0;
+    transition: opacity 300ms var(--ease-out);
+    pointer-events: none;
+  }
+
+  @media (hover: hover) {
+    .talk__card:hover .talk__plate {
+      border-color: var(--graphite);
+    }
+
+    .talk__card:hover::before {
+      opacity: 1;
+    }
+  }
+
+  .talk__plate :global(img) {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  /* Grouped card: a fanned stack of three sheets (covers, or plain sheets). */
+  .talk__plate--stack {
+    overflow: hidden;
+    background: var(--surface);
+  }
+
+  .talk__plate--stack :global(.talk__sheet),
+  .talk__sheet--plain {
+    position: absolute;
+    left: 18%;
+    top: 16%;
+    width: 64%;
+    height: auto;
+    aspect-ratio: 16 / 9;
+    object-fit: cover;
+    border-radius: 6px;
+    border: 1px solid var(--rule);
+    background: var(--surface);
+    box-shadow: 0 8px 20px -12px rgb(19 33 60 / 0.45);
+    transform-origin: 50% 130%;
+    transform: translateX(calc(var(--n) * 14%)) rotate(calc(var(--n) * 5deg));
+    transition: transform 320ms var(--ease-out);
+  }
+
+  .talk__plate--stack > :nth-child(2) {
+    z-index: 1;
+  }
+
+  .talk__sheet--plain {
+    display: grid;
+    place-items: center;
+    padding: 0.5rem;
+  }
+
+  .talk__sheet-years {
+    font-family: var(--font-serif);
+    font-size: var(--step-1);
+    font-weight: 600;
+    color: var(--ink);
+  }
+
+  .talk__plate-sketch {
+    display: grid;
+    place-items: center;
+    width: 100%;
+    height: 100%;
+  }
+
+  .talk__plate-sketch .talk__sketch {
+    width: 62%;
+  }
+
+  .talk__sketch path,
+  .talk__sketch rect {
+    fill: none;
+    stroke-linecap: round;
+  }
+
+  .talk__sketch-frame {
+    stroke: var(--rule);
+    stroke-width: 1.5;
+  }
+
+  .talk__sketch-title {
+    stroke: color-mix(in srgb, var(--graphite) 55%, transparent);
+    stroke-width: 6;
+  }
+
+  .talk__sketch-accent {
+    stroke: var(--artery);
+    stroke-width: 3;
+  }
+
+  .talk__sketch-text {
+    stroke: color-mix(in srgb, var(--graphite) 30%, transparent);
+    stroke-width: 3;
+  }
+
+  /* Dark theme: plain sheets need a firmer edge to stand off the background. */
+  :global(:root[data-theme='dark']) .talk__sheet--plain {
+    border-color: color-mix(in srgb, var(--graphite) 35%, transparent);
+    box-shadow: 0 10px 24px -12px rgb(0 0 0 / 0.7);
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :global(:root:not([data-theme='light'])) .talk__sheet--plain {
+      border-color: color-mix(in srgb, var(--graphite) 35%, transparent);
+      box-shadow: 0 10px 24px -12px rgb(0 0 0 / 0.7);
+    }
+  }
+
+  @media (hover: hover) and (pointer: fine) {
+    .talk--group:is(:hover, :focus-within) .talk__plate--stack :global(.talk__sheet),
+    .talk--group:is(:hover, :focus-within) .talk__sheet--plain {
+      transform: translateX(calc(var(--n) * 24%)) rotate(calc(var(--n) * 9deg));
+    }
+  }
+
+  /* Dark theme: white slides are dimmed a little; full brightness on hover or focus. */
+  .talk__plate::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: 2;
+    background: rgb(11 15 23 / 0.18);
+    opacity: 0;
+    transition: opacity 200ms ease;
+    pointer-events: none;
+  }
+
+  :global(:root[data-theme='dark']) .talk__plate:has(:global(img))::after {
+    opacity: 1;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :global(:root:not([data-theme='light'])) .talk__plate:has(:global(img))::after {
+      opacity: 1;
+    }
+  }
+
+  :global(:root) .talk__card:is(:hover, :focus-within) .talk__plate:has(:global(img))::after {
+    opacity: 0;
+  }
+
+
+  .talk__body > * + * {
+    margin-top: var(--space-2xs);
+  }
+
+  .talk__meta {
+    color: var(--graphite);
+    font-size: var(--step--1);
+  }
+
+  .talk__title {
+    font-family: var(--font-serif);
+    font-size: var(--step-1);
+    font-weight: 600;
+    line-height: 1.3;
+  }
+
+  .talk__title a {
+    text-decoration-color: transparent;
+  }
+
+  /* Touch: the whole card is the target, but the link box itself is 44px too. */
+  @media (pointer: coarse), (max-width: 40rem) {
+    .talk__title a {
+      display: inline-flex;
+      align-items: center;
+      min-height: 44px;
+    }
+  }
+
+  /* The title link covers the whole card. */
+  .stretched::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    border-radius: var(--radius);
+  }
+
+  .stretched:focus-visible {
+    outline: none;
+  }
+
+  .stretched:focus-visible::after {
+    outline: 2px solid var(--vein);
+    outline-offset: 3px;
+  }
+
+  @media (hover: hover) {
+    .talk__card:hover .talk__title a {
+      text-decoration-color: var(--artery);
+      text-decoration-thickness: 2px;
+    }
+  }
+
+  /* Ghost button: the covers carry the weight; the link is the card itself. */
+  .talk__preview {
+    position: relative;
+    z-index: 2;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
+    min-height: 44px;
+    margin-top: var(--space-2xs) !important;
+    padding: 0.4rem 0.25rem;
+    border: 1px solid transparent;
+    border-radius: 999px;
+    background: transparent;
+    color: var(--ink);
+    font-weight: 600;
+    font-size: var(--step--1);
+    cursor: pointer;
+    transition:
+      border-color 160ms ease,
+      transform 160ms var(--ease-out);
+  }
+
+  .talk__preview svg {
+    width: 1rem;
+    height: 1rem;
+  }
+
+  @media (hover: hover) {
+    .talk__preview:hover {
+      text-decoration: underline;
+      text-decoration-color: var(--artery);
+      text-decoration-thickness: 2px;
+      text-underline-offset: 0.25em;
+    }
+  }
+
+  /* Without JavaScript the dialog cannot open: the title link stays. */
+  :global(:root:not(.js)) .talk__preview {
+    display: none;
+  }
+
+  .talk__preview:active {
+    transform: scale(0.97);
+  }
+
+  .talk__more {
+    position: relative;
+    z-index: 2;
+  }
+
+  .talk__decks {
+    list-style: none;
+    padding: 0;
+    margin-top: var(--space-2xs);
+  }
+
+  .talk__decks li {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: var(--space-s);
+    padding-block: 0.2rem;
+    border-top: 1px solid var(--rule);
+    font-size: var(--step--1);
+  }
+
+  .talk__decks a {
+    font-weight: 600;
+  }
+
+  .talk__deck-year {
+    color: var(--graphite);
+  }
+
+  /* Entry: cards slide in from the right (rail: first four; grid: row by row). */
+  @media (prefers-reduced-motion: no-preference) {
+    :global(:root.js) .talks--rail .talks__list[data-reveal]:not([data-reveal='in']) > .talk:nth-child(-n + 4),
+    :global(:root.js) .talks--grid .talk[data-reveal]:not([data-reveal='in']) {
+      opacity: 0;
+    }
+
+    :global(:root.js) .talks--rail .talks__list[data-reveal=''] > .talk:nth-child(-n + 4),
+    :global(:root.js) .talks--grid .talk[data-reveal=''] {
+      animation: talk-failsafe 1ms 3s forwards;
+    }
+
+    :global(:root.js) .talks--rail .talks__list[data-reveal='in'] > .talk:nth-child(-n + 4),
+    :global(:root.js) .talks--grid .talk[data-reveal='in'] {
+      animation: talk-in 420ms var(--ease-out) both;
+      animation-delay: calc(var(--i) * 50ms);
+    }
+  }
+
+  @keyframes talk-in {
+    from {
+      opacity: 0;
+      transform: translateX(24px);
+    }
+  }
+
+  @keyframes talk-failsafe {
+    to {
+      opacity: 1;
+    }
+  }
+</style>
