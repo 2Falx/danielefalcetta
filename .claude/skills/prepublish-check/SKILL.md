@@ -34,7 +34,7 @@ Poi cerca nel codice sorgente (`src/`, `public/`, `astro.config.mjs`):
 | emoji | richiesta dell'utente | assenti |
 
 Immagini in `public/` (non passano dalla pipeline di Astro): controlla i metadati EXIF/GPS con Pillow e rimuovili.
-Il PDF del CV in `public/cv/`: è una versione senza numero di telefono (oscuramento vero, un solo livello di testo leggibile dagli ATS). Verifica con `pdftotext public/cv/Daniele_Falcetta_CV.pdf -` che il numero non ci sia e che il testo non sia duplicato. Se il CV viene sostituito, rifai la versione senza telefono.
+Il PDF del CV in `public/cv/` è la build pubblica del sorgente LaTeX (`Daniele_Falcetta_AI_Engineer_CV_2026-11.tex` in OneDrive/PROGETTI, interruttore `\publictrue`: bilingue, senza telefono). Verifica con `pdftotext -enc UTF-8 public/cv/Daniele_Falcetta_CV.pdf -` che il numero non ci sia, che il testo non sia duplicato e che le lettere accentate siano intere ("più", "Université"). Se il CV cambia, ricompila la build pubblica (pdfLaTeX, MiKTeX installato per l'utente) invece di oscurare un PDF.
 
 ## 2. Cosa controllare e cosa riportare
 
